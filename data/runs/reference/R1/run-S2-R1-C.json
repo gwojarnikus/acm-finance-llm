@@ -1,0 +1,43 @@
+{
+    "session_id": "",
+    "case_id": "S2",
+    "run_type": "R1",
+    "variant_id": "R1-C",
+    "models": "OpenAI Deep Research (5.5)",
+    "prompt_set_version": "",
+    "workflow_version": "manual-deep-research",
+    "started_at": "",
+    "finished_at": "",
+    "duration_sec": null,
+    "tokens_input": null,
+    "tokens_output": null,
+    "cost_estimate": null,
+    "search_used": true,
+    "search_calls": null,
+    "search_queries_reported": [
+        "IMF World Economic Outlook April 2026 advanced economies growth forecast 2026 inflation advanced economies official pdf",
+        "site:bls.gov CPI all items 12-month change March 2026 official BLS",
+        "site:ec.europa.eu eurostat euro area annual inflation April 2026 flash estimate",
+        "GDP advance estimate 1st quarter 2026 BEA official",
+        "FRED 5-year breakeven inflation rate May 2026 official",
+        "Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis, Inflation-Indexed official",
+        "inflation hedging for long-term investors IMF working paper pdf",
+        "Inflation Risks Within and Across Asset Classes NBER pdf",
+        "Good Inflation Bad Inflation Federal Reserve pdf",
+        "Portfolio Allocation for Public Pension Funds NBER pdf",
+        "institutional investors and infrastructure financing OECD pdf",
+        "Treasury inflation-protected securities official TreasuryDirect"
+    ],
+    "sources_count_reported": 22,
+    "confidence_reported_pct": 85,
+    "confidence_justification_reported": "Confidence is high because the macro regime logic is supported by current official data and by well-established academic evidence on inflation sensitivities across asset classes, though exact implementation should still be tailored to a specific fund's liability profile and governance capacity.",
+    "key_data_limitations_reported": [
+        "This recommendation is for a representative pension fund; it is not calibrated to a specific plan's funded ratio, liability duration, cash-flow maturity, jurisdiction, or regulatory constraints.",
+        "Several foundational academic papers are U.S.-centric and estimate historical inflation sensitivities; future regime dynamics may differ.",
+        "Current market data are early-May 2026 snapshots and can move quickly as inflation expectations and policy expectations change.",
+        "Private real-asset implementation quality varies widely, and return smoothing in illiquid assets can overstate diversification benefits."
+    ],
+    "output_word_count_reported": 3600,
+    "self_reported_metadata_source": "prompt-section-5",
+    "final_output": "see run-S2-R1-C.md"
+}

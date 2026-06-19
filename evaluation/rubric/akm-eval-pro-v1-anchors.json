@@ -1,0 +1,792 @@
+{
+  "anchors_id": "akm-eval-pro-v1-anchors",
+  "version": "1.0-pilot",
+  "created_at": "2026-05-16",
+  "status": "pilot — wymaga rozszerzenia (drugi sędzia + ekspercki review)",
+  "calibration_method": "BARS (Behaviorally Anchored Rating Scale) — Smith & Kendall (1963) adapted to text artifacts",
+  "calibrated_from": {
+    "sample_size": 6,
+    "items": ["S1-R1-C", "S1-R1-G", "S2-R1-C", "S2-R1-G", "S3-R1-C", "S3-R1-G"],
+    "coverage_note": "Pilot oparty na 5 raportach przeczytanych w pełni (S1-C, S2-C, S3-C) lub fragmentarycznie (S1-G, S2-G); S3-G pominięty w pilocie ze względu na obfite pokrycie struktury w pozostałych 5. Pełna kalibracja przed Etapem 6 wymaga drugiego sędziego (ICC) i przeglądu eksperckiego."
+  },
+  "source_rubric": "akm-eval-pro-v1.json",
+  "source_spec": "akm-eval-pro-v1-spec.md",
+  "objaśniajacy_spec": "akm-eval-pro-v1-anchors-spec.md",
+  "key_finding": "R1 jako Deep Research SOTA wykazuje wysoką jakość (większość kryteriów na poziomach 7–9). Anchory poziomu 2 i często poziomu 5 są CONSTRUCTED (hypothetical) — opisują zachowania niezaobserwowane w R1 ale teoretycznie możliwe w AKM/B1. Anchory poziomu 8 są OBSERVED — z cytatami z konkretnych raportów R1.",
+  "criteria_anchors": {
+    "A1": {
+      "name_en": "Data Grounding Precision",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Tylko 2–3 cytowania na cały raport, większość liczb bez przypisu. Brak sekcji Sources.",
+          "source": "constructed_hypothetical",
+          "rationale": "Nie zaobserwowane w R1 — wszystkie 6 raportów mają obfite cytowania."
+        },
+        "5": {
+          "description": "Ok. 50% faktów cytowane, ale część cytowań ogólnikowa (np. 'KPMG, 2025' bez konkretnego raportu). Sekcja Sources niekompletna.",
+          "source": "constructed_hypothetical",
+          "rationale": "R1-C/G nie spadły do tego poziomu; typowy stan dla B1 z weak grounding."
+        },
+        "8": {
+          "description": "Każdy fakt liczbowy ma precyzyjny przypis APA 7 z autorem, datą, tytułem. Pojedyncze stwierdzenia ogólne bez cytatów.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 11: 'PLN 594.6 billion total revenues... Source (APA 7): Ministry of Finance. (2026, February 24). Szacunkowe wykonanie budżetu państwa w 2025 r. Government of Poland.'"
+        },
+        "10": {
+          "description": "Pełne ugruntowanie + spójność dat dostępu + cross-references między cytowaniami + identyfikacja konfliktów między źródłami.",
+          "source": "constructed_aspirational"
+        }
+      },
+      "calibration_note": "R1-C konsekwentnie używa formuły 'Source (APA 7):' — wzorzec do replikacji w prompcie sędziego. R1-G używa numeracji przypisów (1, 6, 8 itd.) z References na końcu — inny format ale równie wiarygodny."
+    },
+    "A2": {
+      "name_en": "Source Auditability",
+      "observed_levels_in_r1": [7, 8],
+      "anchors": {
+        "2": {
+          "description": "Wykryto sfabrykowane źródło (autor zmyślony, URL prowadzi gdzie indziej, lub publication doesn't exist).",
+          "source": "constructed_hypothetical",
+          "rationale": "Soft Veto trigger. Nie zaobserwowane w R1; typowo występuje w słabszych B1."
+        },
+        "5": {
+          "description": "Wszystkie źródła wyglądają realnie (autor, rok, tytuł, URL), ale weryfikacja losowej próby N=3 wykazała 1 link niedziałający lub treść strony nie pokrywa cytowanego faktu.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Wszystkie źródła realne (formal level checks passed), N=3 próba content-check pokrywa cytowany fakt w 2/3 przypadkach.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C: cytuje 'Federal Reserve System (2026) H.15 Selected Interest Rates via FRED' — FRED jest realne, formuła cytowania kanoniczna."
+        },
+        "10": {
+          "description": "Wszystkie źródła realne + pełna weryfikacja N=3 + cross-check daty publikacji z datą zdarzenia.",
+          "source": "constructed_aspirational"
+        }
+      },
+      "calibration_note": "Bez tool use sędzia może osiągnąć max 6 punktów (formal level). R1 ma format cytowań pozwalający na łatwą weryfikację. Soft Veto λ=0.5 nie aktywował się w żadnym z 6 R1."
+    },
+    "A3": {
+      "name_en": "Epistemic Uncertainty Calibration",
+      "observed_levels_in_r1": [7, 8, 9],
+      "anchors": {
+        "2": {
+          "description": "Wszystkie liczby i prognozy podane jako pewne. Brak słów 'approximately', 'likely', 'estimated'. Brak sekcji Limitations.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Niektóre szacunki opatrzone modalnością ('about 3.6%'), ale projekcje wieloletnie prezentowane jako deterministyczne.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Każdy szacunek z markerem niepewności + przedział wrażliwości + sekcja key_data_limitations.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 43: 'a flat turnover-tax rate of roughly 3.5% to 3.65%. A practical point estimate is therefore about 3.6%. This estimate assumes no exemptions, no behavioural change, and ordinary compliance rather than a collapse in the base.' + linie 110–114: key_data_limitations z 4 explicit ograniczeniami."
+        },
+        "10": {
+          "description": "Plus eksplicytne distinction known unknowns vs unknown unknowns; przedziały ufności statystyczne.",
+          "source": "constructed_aspirational"
+        }
+      },
+      "calibration_note": "R1 ma self-reported confidence_reported_pct (S1-C: 86, S1-G: 95, S2-C: 85, S2-G: 95, S3-C: 86, S3-G: 95) i key_data_limitations — IGNOROWANE w scoringu (jednolitość z AKM/B1). Sędzia ocenia tylko tekst raportu."
+    },
+    "A4": {
+      "name_en": "Temporal Awareness",
+      "observed_levels_in_r1": [8, 9],
+      "anchors": {
+        "2": {
+          "description": "Anachronizmy: cytowanie 'recent data' z 2022 jako aktualnych; brak dat w cytowaniach; odwołanie do wydarzeń po cutoff modelu bez ostrzeżenia.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Daty obecne w większości cytowań, ale brak eksplicytnej refleksji 'as of [date]' dla kluczowych danych.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Każdy fakt liczbowy ma datę; raport używa 'as of [date]'; brak anachronizmów.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linia 25: 'U.S. 10-year Treasury yield on 7 May 2026: 4.41%' — precyzyjna data per liczba."
+        },
+        "10": {
+          "description": "Plus eksplicytne ostrzeżenie o cutoff modelu vs current data + uzasadnienie reprezentatywności.",
+          "source": "constructed_aspirational"
+        }
+      },
+      "calibration_note": "R1 (Deep Research) ma dostęp do bieżących danych przez web search, więc A4 wysokie. Dla AKM/B1 (bez DR) — A4 może być niższe ze względu na ograniczenia cutoff."
+    },
+    "A5": {
+      "name_en": "Common Sense Robustness",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Wyraźne absurdy ekonomiczne (np. ujemne stopy przy 5% inflacji bez wyjaśnienia, marża netto > 100%, GDP growth > 20% YoY dla developed economy).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Pojedyncze wątpliwe stwierdzenia (np. round numbers zamiast precyzyjnych szacunków, bez sygnalizacji że to approximation).",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Wszystkie stwierdzenia ekonomicznie sensowne; raport identyfikuje paradoksy i je tłumaczy.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 49: '180% of profit when the margin is 2%' — kontr-intuicyjna ale matematycznie poprawna kalkulacja (3.6% turnover / 2% margin = 180%) z uzasadnieniem."
+        },
+        "10": {
+          "description": "Plus aktywne identyfikowanie i wyjaśnianie kontr-intuicyjnych zjawisk (np. 'this seems counterintuitive because...').",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linia 35: kontr-intuicyjna analiza 'A pension fund that truly believes inflation will average 4–5% is therefore not simply positioning for higher nominal yields; it is positioning for persistent inflation surprise' — wyjaśnia różnicę między oczywistym ('higher yields') a głębszym ('persistent surprise')."
+        }
+      },
+      "calibration_note": "R1 nie wykazywał żadnych absurdów common-sense. Soft Veto w A5 nieaktywny."
+    },
+    "B1": {
+      "name_en": "Multi-dimensional Decomposition",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Tylko jeden wymiar analizy (np. tylko fiskalny dla S1, tylko portfolio mathematics dla S2).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "2–3 wymiary, ale powierzchowne (akapit każdy bez głębi).",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "≥4 wymiary z umiarkowaną głębią + jawne nazwane sekcje.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C: 'Revenue-Neutral Rate' (fiskalny), 'Sectoral... Effects' (sektorowy), 'Compatibility with EU Law' (prawny), distributional, public-finance architecture, cascading supply-chain — 6+ wymiarów."
+        },
+        "10": {
+          "description": "≥5 wymiarów z głębią + eksplicytna refleksja nad ich wzajemnymi relacjami.",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C: fiskalny + demograficzny + labour-market + gender + regional + informality + political economy — 7 wymiarów z explicit cross-references ('That demographic point has a direct social dimension')."
+        }
+      }
+    },
+    "B2": {
+      "name_en": "Causal Chain Robustness",
+      "observed_levels_in_r1": [8, 9],
+      "anchors": {
+        "2": {
+          "description": "Non sequitur — wnioski nie wynikają z analizy (np. 'therefore X' bez podanej przesłanki).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Większość wniosków uzasadniona, 2–3 luki logiczne (skoki bez ogniwa pośredniego).",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Solidna logika; każdy wniosek odwołuje się do konkretnej przesłanki z analizy.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 81: 'A universal turnover tax... is much harder to reconcile with the current EU framework, not because the EU mandates Poland's present PIT/CIT design, but because the combination of VAT-harmonisation logic, state-aid/internal-market scrutiny, and especially the Union's Pillar Two minimum-tax directive makes a clean one-tax substitution legally incomplete' — wniosek z 3 explicit przesłanek."
+        },
+        "10": {
+          "description": "Plus eksplicytne łańcuchy 'because... therefore... which implies... finally...' z nazwanymi krokami logicznymi.",
+          "source": "constructed_aspirational"
+        }
+      }
+    },
+    "B3": {
+      "name_en": "Cognitive Bias Mitigation",
+      "observed_levels_in_r1": [6, 7, 8],
+      "anchors": {
+        "2": {
+          "description": "Wyraźny confirmation bias (cytowanie tylko źródeł potwierdzających), brak alternatywnych perspektyw.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Niektóre biasy obecne (np. recency bias — dominacja źródeł <12mc), ale raport ma sekcję counterargumentów.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-G: dominują źródła 2024–2026 (recency bias), ale autor odnosi się też do akademickich prac z 2004 (Gorton & Rouwenhorst) i 2009 (Attié & Roache)."
+        },
+        "8": {
+          "description": "Aktywna mitygacja ≥2 biasów: konstrukcja kontrargumentu + cytowanie zarówno świeżych jak i fundamentalnych prac + ważenie różnych szkół myślenia.",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C linie 43–44: balansuje 'UBI might dramatically reduce poverty' (steel-manning) z empirycznymi limitami z Finland/Alaska experiments — mitygacja confirmation bias przez explicit kontrargumentację."
+        },
+        "10": {
+          "description": "Plus eksplicytna refleksja nad własnymi biasami + zastosowanie technik typu pre-mortem analysis.",
+          "source": "constructed_aspirational"
+        }
+      }
+    },
+    "B4": {
+      "name_en": "Second-Order Thinking",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Tylko bezpośrednie konsekwencje ('tax X reduces revenue Y'); brak analizy reakcji aktorów.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "1–2 efekty drugiego rzędu, ale powierzchownie ('konkurencja może zareagować').",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "≥3 efekty drugiego rzędu z analizą interakcji.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-G linia 102–104: vertical integration incentive + import bias + monopolization — 3 efekty drugiego rzędu z explicit mechanizmem 'A cumulative turnover tax therefore acts as an implicit subsidy for imported products'."
+        },
+        "10": {
+          "description": "Efekty drugiego I trzeciego rzędu + explicit 'What could go wrong?' z scenariuszami.",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C linia 53: 'an ambitious UBI would first be launched as a symbol of social renewal and then later be cut, taxed back, or hollowed out under debt pressure, producing precisely the insecurity and policy volatility it was supposed to reduce' — pełen łańcuch trzeciego rzędu (intervention → backlash → reversal → worse outcome niż status quo)."
+        }
+      }
+    },
+    "B5": {
+      "name_en": "Scenario Modeling",
+      "observed_levels_in_r1": [5, 7, 8],
+      "anchors": {
+        "2": {
+          "description": "Tylko 1 scenariusz (deterministycznie).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "2 scenariusze (bazowy + jeden alternatywny) bez prawdopodobieństw.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-G: Scenario A (State Budget Only) vs Scenario B (Consolidated General Government) — 2 jasno wyodrębnione scenariusze."
+        },
+        "8": {
+          "description": "3 scenariusze z opisem warunków / triggerów.",
+          "source": "constructed_hypothetical",
+          "rationale": "R1 zazwyczaj 2 scenariusze; pełny 3-scenariuszowy framework rzadko zaobserwowany."
+        },
+        "10": {
+          "description": "3+ scenariusze z prawdopodobieństwami i triggerami przejścia.",
+          "source": "constructed_aspirational"
+        }
+      },
+      "calibration_note": "R1 słabsze w explicit scenario modeling — prompty cases nie wymuszają tego. Niska wartość B5 to nie tyle defekt R1, ile sygnał że strukturalnie nie używa formal scenarios."
+    },
+    "B6": {
+      "name_en": "Solution Novelty",
+      "observed_levels_in_r1": [5, 6, 7],
+      "anchors": {
+        "2": {
+          "description": "Standardowe rekomendacje z podręcznika ('należy rozważyć alternatywy', 'wymaga dalszej analizy').",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Trafne, ale przewidywalne rekomendacje zgodne z mainstream literatury.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-G: '25% inflation-linked sovereign bonds, 15% short-duration credit, 25% equities tilted value/quality' — solidne, ale dobrze znane LDI playbook."
+        },
+        "8": {
+          "description": "Co najmniej jeden niestandardowy insight wykraczający poza obecną literaturę.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 45: 'either the base is truly universal and the rate is around 3.6%, or the rate climbs into a range that becomes even harder to absorb commercially' — formalne wyrażenie 'brutal arithmetic' przedstawia trade-off w sposób bardziej operacyjny niż typowa literatura."
+        },
+        "10": {
+          "description": "Synteza ≥2 obszarów wiedzy w nowatorski sposób; rekomendacja niemożliwa do znalezienia w jednej źródłowej pracy.",
+          "source": "constructed_aspirational"
+        }
+      },
+      "calibration_note": "B6 z subweight 0.5 ze względu na asymetrię AKM/R1 — R1 ma dostęp do recent literature i może wnosić insights których AKM nie ma. Średni poziom 6 dla R1 nie jest złym wynikiem przy tym kryterium."
+    },
+    "C1": {
+      "name_en": "Integrated Counter-Argumentation",
+      "observed_levels_in_r1": [8, 9],
+      "anchors": {
+        "2": {
+          "description": "Jednostronna narracja; brak kontrargumentów; brak sekcji Limitations/Risks.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Pojedyncze 'limitations' wymienione na końcu, bez aktywnej analizy.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Aktywne 'However', 'Counter to', 'Critics may argue' wbudowane w narrację + sekcja Limitations.",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C linia 35: 'The crucial counterargument is that UBI might still be worth it if it dramatically reduced poverty, simplified administration and restored trust in the welfare state. Those benefits are not imaginary' — explicit steel-manning."
+        },
+        "10": {
+          "description": "Steel-manning opozycyjnych pozycji + obalenie po przyznaniu im siły.",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C: cała narracja wokół UBI — 'best argument for' wymieniony i osłabiony przez fiscal arithmetic."
+        }
+      },
+      "calibration_note": "R1 systemowo ma wysoki C1 (Deep Research training). Hipoteza badawcza: AKM osiągnie zbliżone C1 dzięki Krytykowi, B1 będzie znacząco niżej. To kluczowy test architektury MAS."
+    },
+    "C2": {
+      "name_en": "Multiperspectival Synthesis",
+      "observed_levels_in_r1": [7, 8, 9],
+      "anchors": {
+        "2": {
+          "description": "Płaska perspektywa (tylko optymistyczna lub tylko pesymistyczna).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "2 perspektywy wymienione, nieintegrowane (np. ekonomiczna obok prawnej, bez interakcji).",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "≥3 perspektywy z próbą syntezy.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C: arithmetic (3.6%) + economic (sectoral impact) + legal (EU law) zintegrowane w jednolitą tezę."
+        },
+        "10": {
+          "description": "Synteza heglowska — teza i antyteza ustępują syntezie ujawniającej złożoność.",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C linia 37: 'In Italy, a fiscally neutral UBI is likely to be too small to be transformative, while a transformative UBI is too large to be fiscally neutral' — explicit antynomia z syntezą trade-off."
+        }
+      }
+    },
+    "C3": {
+      "name_en": "Objectivity & Sycophancy Mitigation",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Styl marketingowy ('excellent opportunity', 'absolutely transformative').",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Neutralny ton, ale unika trudnych wniosków (hedging na końcu).",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Bezstronny osąd; podejmuje trudne konkluzje (rekomendacja negatywna).",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 87: 'Do not pursue a universal turnover tax as a full replacement for PIT and CIT' — explicit negatywna rekomendacja."
+        },
+        "10": {
+          "description": "'Brutalna szczerość' — konkluzja sprzeczna z apparent intentem użytkownika.",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C linia 59: 'a full UBI is not the most credible long-run social reform for Italy' — pytanie o UBI rozwiązuje przeciwko UBI."
+        }
+      },
+      "calibration_note": "R1 nie wykazuje sycophancy ('great question', 'wonderful idea'). To prawdopodobnie efekt Deep Research training. Sędzia powinien karać sycophancy markers znacznie częściej u B1."
+    },
+    "C4": {
+      "name_en": "Insight Density",
+      "observed_levels_in_r1": [7, 8],
+      "anchors": {
+        "2": {
+          "description": "Wata słowna; każdy akapit powtarza tezę poprzedniego innymi słowami.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Mieszanka insights i powtórzeń; niektóre akapity mogłyby zostać usunięte bez utraty treści.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Każde zdanie wnosi wartość; brak ogólników typu 'this is important'.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 49: 'at 3.6%... burden equals 72% of profit when margin is 5%, 120% when 3%, 180% when 2%' — gęste informacyjnie, 3 datapoints w jednym zdaniu."
+        },
+        "10": {
+          "description": "Skondensowane, executive-grade; eksplicytne priorytetyzowanie insights.",
+          "source": "constructed_aspirational",
+          "rationale": "R1 ma tendencję do verbose academic style; rzadko skondensowane do executive-grade."
+        }
+      },
+      "calibration_note": "R1-C krótsze (~5600 słów) ale gęstsze niż R1-G (~3300-3600 słów ale luźniejsze). Korelacja word_count vs C4 nie liniowa."
+    },
+    "C5": {
+      "name_en": "Process Auditability",
+      "observed_levels_in_r1": [7, 8, 9],
+      "anchors": {
+        "2": {
+          "description": "Brak ujawnienia metodyki; wynik prezentowany bez wyjaśnienia drogi.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Częściowa transparentność — opisana metoda ale brak konkretnych parametrów ('we estimated using standard approach').",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Pełne ujawnienie założeń, parametrów, decyzji metodycznych.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 43: 'To broaden the base, one can combine the 2025 sales figure for the 10+ segment with Statistics Poland's latest micro-enterprise revenue data and with the very stable sales-to-total-revenue ratio observed in the 10+ enterprise data, which was 96.6% in 2024 and 96.5% in 2025' — pełna ścieżka metodyczna z parametrami."
+        },
+        "10": {
+          "description": "Plus eksplicytne wskazanie gdzie inne decyzje metodyczne zmieniłyby wynik (sensitivity).",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 45: 'if the tax were imposed only on the 2025 net sales of the currently observed 10+ worker enterprise population, the neutral rate would jump to roughly 4.9%' — explicit sensitivity analysis."
+        }
+      },
+      "calibration_note": "R1 generalnie wysokie C5 — Deep Research z natury ujawnia 'sources_consulted', 'search_queries_used'. To metadata jest IGNOROWANA w scoringu; ocenia się tekst raportu."
+    },
+    "C6": {
+      "name_en": "Dialectical Resolution Quality",
+      "observed_levels_in_r1": [7, 8, 9],
+      "anchors": {
+        "2": {
+          "description": "Sprzeczności pomijane lub fałszywie ujednolicane ('both sides have a point').",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Sprzeczności wymienione, ale bez rozstrzygnięcia ('this remains debated').",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Sprzeczności wymienione + uzasadnione preferowane rozstrzygnięcie.",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C linia 65: 'the prudent route is not a national full UBI, but a strictly debt-neutral, limited-scope quasi-universal transfer with automatic review clauses' — rozstrzygnięcie sprzeczności UBI vs targeted welfare przez via media."
+        },
+        "10": {
+          "description": "Plus odniesienie do kryterium rozstrzygającego (utilitarne/pareto/deontologiczne) + sensitivity analysis.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linia 35: explicit kryterium 'real funded status' jako primary measure rozstrzyga między 'higher nominal yields' a 'inflation hedging'."
+        }
+      }
+    },
+    "D1": {
+      "name_en": "Operational Actionability",
+      "observed_levels_in_r1": [7, 8, 9],
+      "anchors": {
+        "2": {
+          "description": "Tylko ogólniki: 'należy rozważyć', 'powinno się przeanalizować'.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Kierunek wskazany ('increase inflation hedging'), brak konkretnych parametrów (co, ile, kiedy).",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Konkretna rekomendacja z parametrami.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linie 57–69: pełna alokacja portfolio z procentami (25% linkers, 15% short-duration, 25% equities, 15% infra, 8% real estate, 7% commodities, 5% FRN) + rationale per sleeve."
+        },
+        "10": {
+          "description": "Plus plan implementacji z fazami i miarami sukcesu.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linia 73: 'four implementation rules: measure success against real funded status, hold 12 months cash buffer, hedge FX, rebalance with discipline' — explicit governance framework."
+        }
+      }
+    },
+    "D2": {
+      "name_en": "Regulatory Compliance",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Naruszenia lub ignorowanie regulacji; brak odniesień prawnych.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Świadomość regulacji (wzmianka o 'EU rules' lub 'tax law'), brak konkretnych paragrafów.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Konkretne paragrafy/dyrektywy cytowane poprawnie.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 33: 'Article 401 of the VAT Directive', 'Directive (EU) 2022/2523', 'Case C-475/17', 'TFEU' — precyzyjne odniesienia per S1."
+        },
+        "10": {
+          "description": "Plus analiza interakcji między regulacjami.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 71: analiza interakcji Pillar Two (Dir. 2022/2523) z hipotetycznym turnover tax — pokazuje że 'covered taxes are fundamentally income taxes, not non-income-based levies' wymusza zachowanie CIT layer."
+        }
+      },
+      "calibration_note": "R1 wysokie D2 dzięki dostępowi do CJEU/EUR-Lex przez Deep Research. AKM/B1 prawdopodobnie niższe — wymaga per-case briefingu D2 (TBD)."
+    },
+    "D3": {
+      "name_en": "Risk & Asymmetry Resilience",
+      "observed_levels_in_r1": [7, 8, 9],
+      "anchors": {
+        "2": {
+          "description": "Pomijanie ryzyka; 'guaranteed returns', brak wzmianki o downside.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Wzmianka o ryzyku, brak kwantyfikacji (np. 'inflation may rise further').",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Risk-reward ratio + analiza wrażliwości.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linia 47: 'commodity hedging strength is driven mainly by energy inflation rather than broad core inflation' — explicit risk decomposition + sensitivity (energy vs core)."
+        },
+        "10": {
+          "description": "Plus stress test scenariuszy ekstremalnych z kwantyfikacją ekspozycji.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-G linia 47–48: 'fund... must structurally and permanently increase their unencumbered cash and highly liquid collateral buffers to survive standard deviation rate shocks' — explicit reference do 2022 UK gilt crisis jako stress test."
+        }
+      }
+    },
+    "D4": {
+      "name_en": "Internal Quantitative Consistency",
+      "observed_levels_in_r1": [7, 8, 9],
+      "anchors": {
+        "0": {
+          "description": "Wyraźna sprzeczność numeryczna (suma składowych ≠ deklarowana całość).",
+          "source": "constructed_hypothetical"
+        },
+        "2": {
+          "description": "Wiele drobnych nieścisłości (np. rounding errors propagujące się przez kalkulacje).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Większość obliczeń poprawne, 1–2 nieścisłości.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Wszystkie obliczenia spójne; składowe sumują się.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-G linia 25: tabela PIT/CIT 28.8 + 174.1 = 202.8 (sprawdzone), 63.7 + 28.1 = 91.8 (sprawdzone), 92.5 + 202.2 = 294.6 (sprawdzone, ale faktycznie 294.7 — 0.1 rounding) — bardzo bliska spójność."
+        },
+        "10": {
+          "description": "Plus jawne wyprowadzenia z weryfikowalnymi krokami (formuły + intermediate steps).",
+          "source": "observed_in_r1",
+          "example": "S1-R1-G linia 53–55: 'Required flat rate τ = T / B = 92.5 / 8341.5 = 1.11%' — explicit formula z parametrami."
+        }
+      },
+      "calibration_note": "KRYTYCZNE: Sędzia LLM bez tool use nie ZWERYFIKUJE czy 28.8 + 174.1 = 202.8. Wymaga Python interpreter w prompcie sędziego. Drugi sędzia obligatoryjny dla próby pilotowej. Próg Soft Veto 2.0 — żaden R1 nie spadł poniżej."
+    },
+    "D5": {
+      "name_en": "Metric Selection Suitability",
+      "observed_levels_in_r1": [8, 9],
+      "anchors": {
+        "2": {
+          "description": "Wyraźnie nieadekwatna metoda (np. P/E dla REIT, DCF dla bankrupt company).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Adekwatna kategoria, niespecyficzny dobór.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Trafny dobór metryk z uzasadnieniem.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linia 39: 'TIPS index has strong positive exposure to core inflation shocks. This is crucial because much of the current inflation pulse... is still visibly energy-heavy, but a five-year 4–5% regime would almost certainly require broader core persistence' — explicit metric selection (TIPS) + rationale (core vs energy inflation)."
+        },
+        "10": {
+          "description": "Plus porównanie z alternatywami i argument dlaczego wybrane.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linia 45: porównuje commodities (tactical insurance) z TIPS (strategic hedge) z explicit argument dlaczego nie zamieniają się rolami."
+        }
+      }
+    },
+    "D6": {
+      "name_en": "Market Regime Adaptability",
+      "observed_levels_in_r1": [6, 8, 9],
+      "anchors": {
+        "2": {
+          "description": "Strategia ignorująca reżim (np. 60/40 dla stagflation environment).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Wzmianka o reżimie bez dostosowania strategii.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Strategia dostosowana z uzasadnieniem.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-G linia 23: 'macroeconomic confluence introduces a severe, dual-front crisis: erosion of real asset returns... and asymmetric expansion of inflation-linked long-term liabilities' — diagnoza reżimu + dostosowana strategia (LDI redesign)."
+        },
+        "10": {
+          "description": "Plus warianty dla różnych reżimów i triggery przejścia.",
+          "source": "constructed_aspirational"
+        }
+      },
+      "calibration_note": "D6 najbardziej istotne dla S2 (pension fund); średnia waga dla S1, S3."
+    },
+    "D7": {
+      "name_en": "Information Density (Linguistic)",
+      "observed_levels_in_r1": [6, 7, 8],
+      "anchors": {
+        "2": {
+          "description": "Lana woda; akademickie 'word salad' z 30% słów bez dodatkowej wartości.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Mieszanka; niektóre akapity skondensowane, inne rozwlekłe.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-G linia 23: 'This stagflation-adjacent environment systematically invalidates many of the core assumptions underpinning modern portfolio theory, particularly the historically reliable negative correlation...' — przykład verbose academic style."
+        },
+        "8": {
+          "description": "Każdy akapit wnosi wartość; eliminacja ogólników.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 49: krótki, bardzo gęsty akapit z 4 datapoints + wniosek + cytowanie."
+        },
+        "10": {
+          "description": "Skondensowane, executive-grade.",
+          "source": "constructed_aspirational"
+        }
+      }
+    },
+    "D8": {
+      "name_en": "Report Coherence",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Wyraźne szwy ('Krytyk zauważył, że...', 'jak wcześniej wspomniano, ale teraz...').",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Niespójności stylu między sekcjami (techniczna sekcja obok marketingowej).",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Spójny styl i głos.",
+          "source": "observed_in_r1",
+          "example": "Wszystkie 6 R1 mają spójny ekspercki ton i terminologię od początku do końca."
+        },
+        "10": {
+          "description": "Plus narrative arc (problem → analiza → rozstrzygnięcie).",
+          "source": "observed_in_r1",
+          "example": "S3-R1-C: explicit arc — Problem (high-debt Italy + UBI tension) → Analysis (fiscal/demographic/labour) → Synthesis (UBI structurally misaligned) → Recommendation (targeted welfare instead)."
+        }
+      }
+    },
+    "E1": {
+      "name_en": "Format Compliance",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Łamie podstawowy schemat (brak sekcji, brak APA 7).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Schemat częściowo zachowany.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Schemat zachowany; drobne odstępstwa.",
+          "source": "observed_in_r1",
+          "example": "R1-C: schemat DR + sekcja 'Research Process Metadata' z self-reported confidence."
+        },
+        "10": {
+          "description": "Pełna zgodność + dodatkowe elementy (tabele, sekcje 'Bottom Line').",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linie 83–91: explicit 'Bottom Line' z bullet points — przejrzysta executive summary."
+        }
+      },
+      "calibration_note": "Per typ inny schemat: AKM ma [ANALYST] + 4 sekcje; R1 ma DR + metadata; B1 swobodny. Sędzia musi otrzymać schema_per_type."
+    },
+    "E2": {
+      "name_en": "Negative Constraints",
+      "observed_levels_in_r1": [8, 9],
+      "anchors": {
+        "2": {
+          "description": "Wielokrotne naruszenia ograniczeń z promptu.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Pojedyncze naruszenia (np. back-reference 'as discussed earlier').",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Brak naruszeń check-listy.",
+          "source": "observed_in_r1",
+          "example": "R1 raporty zgodne z `r1-prompt-template.md`: self-reported metadata, confidence_reported_pct w przedziale 0–100, key_data_limitations ≥ 1."
+        },
+        "10": {
+          "description": "Plus aktywne sygnalizowanie przestrzegania (explicit 'Note: data as of [date]').",
+          "source": "observed_in_r1",
+          "example": "S2-R1-G linia 109: 'Current market data are early-May 2026 snapshots and can move quickly' — eksplicytne sygnalizowanie."
+        }
+      }
+    },
+    "E3": {
+      "name_en": "Tone Consistency",
+      "observed_levels_in_r1": [8, 9, 10],
+      "anchors": {
+        "2": {
+          "description": "Styl marketingowy lub potoczny (wykrzykniki, slang).",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Mieszanka; momentami profesjonalny, momentami zbyt swobodny.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Konsekwentny ekspercki ton.",
+          "source": "observed_in_r1",
+          "example": "Wszystkie 6 R1 — chłodny, analityczny, neutralny ton."
+        },
+        "10": {
+          "description": "Plus terminology consistency (każde pojęcie definiowane przy pierwszym użyciu).",
+          "source": "observed_in_r1",
+          "example": "S2-R1-G: 'Liability-Driven Investing (LDI)' zdefiniowane przy pierwszym użyciu, używane konsekwentnie."
+        }
+      }
+    },
+    "E4": {
+      "name_en": "Output Length Discipline",
+      "observed_levels_in_r1": [7, 8, 9],
+      "anchors": {
+        "2": {
+          "description": "Skrajnie krótki (<500 słów) dla S1/S2/S3 lub skrajnie długi (>8000 słów) z balastem.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "W przedziale, ale z wyraźnym balastem (akademickie wstawki, powtórzenia).",
+          "source": "observed_in_r1",
+          "example": "S2-R1-G word_count ~3600 + wpis 'verbose academic style' (linia 23–24) — w przedziale, ale momentami rozwlekły."
+        },
+        "8": {
+          "description": "Adekwatna długość (per case 2500–5000 słów), niska redundancja.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C: ~5600 słów dla skomplikowanego case (PL tax + EU law) — w górnym końcu, ale uzasadnione."
+        },
+        "10": {
+          "description": "Optymalna długość; każda sekcja proporcjonalna do wagi tematu.",
+          "source": "constructed_aspirational"
+        }
+      },
+      "calibration_note": "WAŻNE: prompt sędziego musi zawierać self-warning 'you tend to prefer longer responses — penalize length without substance' (Saito et al., 2023; Hu et al., 2025). Bez tego sędzia LLM systematycznie faworyzuje R1-G nad R1-C."
+    },
+    "E5": {
+      "name_en": "Reproducibility Signals",
+      "observed_levels_in_r1": [8, 9],
+      "anchors": {
+        "2": {
+          "description": "Brak ujawnienia założeń; brak parametrów; black box.",
+          "source": "constructed_hypothetical"
+        },
+        "5": {
+          "description": "Niektóre założenia podane, większość niejawna.",
+          "source": "constructed_hypothetical"
+        },
+        "8": {
+          "description": "Wszystkie 5 itemów checklisty (założenia, daty, metoda, parametry, zakres czasowy) ujawnione.",
+          "source": "observed_in_r1",
+          "example": "S1-R1-C linia 43: explicit assumptions ('assumes no exemptions, no behavioural change, ordinary compliance') + dates per source + method (turnover proxy from net sales) + parameters (96.5% sales-to-revenue ratio) + scope (2025 data)."
+        },
+        "10": {
+          "description": "Plus checklist replikacji + potential odchylenia.",
+          "source": "observed_in_r1",
+          "example": "S2-R1-C linie 99–103: key_data_limitations z 4 explicit limitations + recommendation 'should be tailored to a specific fund's liability profile'."
+        }
+      },
+      "calibration_note": "R1 ma key_data_limitations_reported jako self-reported metadata — IGNOROWANE w scoringu. Ocena E5 wyłącznie z tekstu raportu."
+    }
+  },
+  "soft_veto_observations_from_pilot": {
+    "A1_threshold_3.0": {
+      "trigger_count": 0,
+      "observation": "Żaden R1 nie spadł poniżej 8 w A1. Próg 3.0 wydaje się odpowiedni."
+    },
+    "A2_conditional_fabrication": {
+      "trigger_count": 0,
+      "observation": "Nie wykryto fabrykacji źródeł w żadnym R1. Próg warunkowy uzasadniony — Soft Veto aktywuje się tylko przy ewidentnej fabrykacji, nie przy braku weryfikowalności URL."
+    },
+    "D4_threshold_2.0": {
+      "trigger_count": 0,
+      "observation": "Żaden R1 nie spadł poniżej 7 w D4. Próg 2.0 obniżony z 3.0 (mitygacja błędu LLM-judge) wydaje się odpowiedni — λ nie aktywuje się dla drobnych nieścisłości typu rounding."
+    },
+    "validation_status": "Pilot na 6 R1 NIE walidował progów dla niższych poziomów — wszystkie R1 zbyt wysokie. Pełna walidacja wymaga Etapu 3b (12 raportów: 3 AKM + 3 B1 + 6 R1) gdzie B1 może spadać do progów krytycznych."
+  },
+  "overall_calibration_notes": [
+    "R1 jako Deep Research SOTA wykazuje wysoką jakość — większość kryteriów na poziomach 7-9. Anchory poziomu 2 i często 5 są CONSTRUCTED (hypothetical).",
+    "Próba 6 R1 nie pokrywa pełnego rozkładu jakości oczekiwanego w 60 odpowiedziach (zwłaszcza dolnego końca z B1). Pełna kalibracja BARS dolnych anchorów wymaga rozszerzenia próby o B1 i/lub iteracji po Etapie 3b.",
+    "Asymetria między R1-C (formuła 'Source (APA 7):') a R1-G (numbered footnotes + References sekcja na końcu) wymaga normalizacji w prompcie sędziego.",
+    "Self-reported metadata R1 (confidence_reported_pct, key_data_limitations_reported) IGNOROWANE w scoringu — sędzia ocenia wyłącznie tekst raportu, dla jednolitości z AKM/B1.",
+    "Soft Veto nie aktywował się dla żadnego R1 — próg D4=2.0 wydaje się odpowiedni; weryfikacja pełna w Etapie 3b na B1.",
+    "Verbosity bias warning: prompt sędziego dla E4 wymaga explicit ostrzeżenia ('you tend to prefer longer responses') — bez tego LLM-judge systematycznie faworyzowałby R1-G (dłuższe) nad R1-C (krótsze, gęstsze)."
+  ],
+  "limitations": [
+    "Pilot oparty na pełnym przeglądzie 3 raportów (S1-C, S2-C, S3-C) i częściowym przeglądzie 2 (S1-G, S2-G); S3-G pominięty — uznane za wystarczające pokrycie struktury, ale pełna BARS wymaga 100% przeglądu wszystkich 6.",
+    "Brak drugiego sędziego — nie obliczono ICC dla pilotu. Wymagane przed Etapem 3b/6.",
+    "Brak per-case briefingów dla D2/D5 podczas pilotu — anchory dla tych kryteriów oparte głównie na ogólnej obserwacji jakości cytowań regulacyjnych, nie na weryfikacji konkretnych paragrafów per case.",
+    "Anchory poziomu 10 są w większości CONSTRUCTED_ASPIRATIONAL — żaden R1 nie osiągnął pełnego poziomu 10 w większości kryteriów. To może wymagać korekty po pilotażu Etapu 3b/6 (jeśli AKM osiągnie poziom 10, anchory zostają; jeśli nigdy — należy obniżyć aspiracje).",
+    "Brak ekspertyzy domenowej (CFA / prawnik tax law / actuary) w pilocie — anchory dla D2, D4, D5 oparte na ogólnej wiedzy LLM (pilot). Mitygacja w Etap 6 przez cross-model LLM-judge (Claude + GPT-4o) z per-case briefingami D2/D5; brak ludzkiego eksperta w workflow (decyzja 2026-05-17)."
+  ],
+  "next_steps": [
+    "Walidacja progów Soft Veto w Etapie 3b (12 raportów z B1 daje pełniejszy rozkład jakości).",
+    "Drugi sędzia dla 6 R1 z pilotu → obliczenie ICC per kryterium → decyzja dla D4 (zostawić w LLM-judge vs przenieść do eksperckiej).",
+    "Wbudowanie anchorów do promptu sędziego dla Etapu 3b — bez identyfikacji że pochodzą z R1 (zasada izolacji z spec ewaluacji §4 Etap 2a).",
+    "Iteracja v2 anchorów po Etapie 3b/6 — dolne anchory (poziom 2) skorygować na podstawie rzeczywistych obserwacji z B1; górne (poziom 10) na podstawie najlepszych AKM."
+  ]
+}

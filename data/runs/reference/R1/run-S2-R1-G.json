@@ -1,0 +1,41 @@
+{
+    "session_id": "",
+    "case_id": "S2",
+    "run_type": "R1",
+    "variant_id": "R1-G",
+    "models": "Google Gemini Deep Research (3.1 Pro)",
+    "prompt_set_version": "",
+    "workflow_version": "manual-deep-research",
+    "started_at": "",
+    "finished_at": "",
+    "duration_sec": null,
+    "tokens_input": null,
+    "tokens_output": null,
+    "cost_estimate": null,
+    "search_used": true,
+    "search_calls": null,
+    "search_queries_reported": [
+        "macroeconomic forecasts 2025-2030 inflation and growth developed economies IMF OECD",
+        "pension fund asset allocation strategy 4-5% inflation moderate growth scenario",
+        "asset class performance in 4-5% inflation and moderate growth regimes research",
+        "institutional investor outlook persistent inflation asset allocation 2025-2030",
+        "historical returns of real assets infrastructure commodities during 4-5 percent inflation",
+        "US CPI inflation 2024 2025 2026 data and forecasts BLS FOMC",
+        "EU HICP inflation 2024 2025 2026 data Eurostat ECB forecasts",
+        "private credit performance in persistent inflation and moderate growth scenarios research",
+        "pension fund LDI strategy adjustments for persistent inflation 4-5%",
+        "equity sector pricing power and margin resilience in stagflationary moderate growth environments",
+        "5-year breakeven inflation rates US and Europe May 2026 data",
+        "pension fund long-term return assumptions in 5% inflation regime 2026-2030 research"
+    ],
+    "sources_count_reported": 28,
+    "confidence_reported_pct": 95,
+    "confidence_justification_reported": "The analysis heavily leverages a robust, triangulated consensus of premier institutional research (IMF, SSGA, PGIM, J.P. Morgan, S&P Global) alongside exact 2026 macroeconomic data to deeply corroborate the specified scenario dynamics.",
+    "key_data_limitations_reported": [
+        "Forward-looking capital market assumptions and expected returns vary significantly by institution and are highly sensitive to unpredictable geopolitical shocks not captured in standard baseline econometric models.",
+        "Private market historical return data inherently suffers from significant survivorship bias and appraisal-based return smoothing, potentially drastically understating the true underlying mark-to-market volatility during prolonged stagflationary periods."
+    ],
+    "output_word_count_reported": 5100,
+    "self_reported_metadata_source": "prompt-section-5",
+    "final_output": "see run-S2-R1-G.md"
+}

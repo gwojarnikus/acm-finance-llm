@@ -1,0 +1,1 @@
+Analyse the potential long-term consequences of introducing a Universal Basic Income (UBI) in a country with high public debt, such as Italy, taking into account fiscal and social effects as well as labour-market implications, together with the specific features of its demographic structure and labour market.

@@ -1,0 +1,41 @@
+{
+    "session_id": "",
+    "case_id": "S1",
+    "run_type": "R1",
+    "variant_id": "R1-C",
+    "models": "OpenAI Deep Research (5.5)",
+    "prompt_set_version": "",
+    "workflow_version": "manual-deep-research",
+    "started_at": "",
+    "finished_at": "",
+    "duration_sec": null,
+    "tokens_input": null,
+    "tokens_output": null,
+    "cost_estimate": null,
+    "search_used": true,
+    "search_calls": null,
+    "search_queries_reported": [
+        "site:gov.pl Ministerstwo Finansów dochody budżetu państwa PIT CIT 2025 wykonanie PDF",
+        "site:gov.pl reforma dochodów JST 2025 PIT CIT Ministerstwo Finansów udziały",
+        "GUS przychody netto ze sprzedaży produktów towarów i materiałów przedsiębiorstwa 2024 pdf",
+        "site:stat.gov.pl Wyniki finansowe przedsiębiorstw niefinansowych w 2025 r.",
+        "site:stat.gov.pl wyniki_finansowe_przedsiebiorstw_w_2025_r.pdf",
+        "site:stat.gov.pl działalność przedsiębiorstw o liczbie pracujących do 9 osób w 2024 r.",
+        "EUR-Lex Article 401 VAT Directive turnover taxes other than VAT",
+        "CURIA turnover tax VAT essential characteristics Article 401 IRAP Banca popolare di Cremona",
+        "EUR-Lex Polish retail tax state aid General Court Court of Justice official",
+        "Directive 2022/2523 minimum taxation multinational groups official EUR-Lex"
+    ],
+    "sources_count_reported": 24,
+    "confidence_reported_pct": 86,
+    "confidence_justification_reported": "The budget-neutrality arithmetic is robust because the key fiscal and enterprise-base figures come from current official Polish sources, but the legal assessment remains design-dependent at the Article 401 VAT boundary.",
+    "key_data_limitations_reported": [
+        "No single official 2025 dataset provides a perfectly universal economy-wide turnover base matching the legal concept of a hypothetical turnover tax, so the base had to be proxied from GUS enterprise-revenue data.",
+        "Micro-enterprise turnover for 2025 was not available in the same current official form as the 2025 data for larger firms, so the analysis used the latest 2024 micro data and scaling assumptions.",
+        "Financial institutions, insurers, and some special institutional sectors are only partially covered or excluded in the main enterprise datasets, while turnover is conceptually difficult for those sectors anyway.",
+        "The estimate is static: it assumes no behavioural changes, no base erosion from evasion or restructuring, and no second-round effects on prices, wages, or firm exit."
+    ],
+    "output_word_count_reported": 5600,
+    "self_reported_metadata_source": "prompt-section-5",
+    "final_output": "see run-S1-R1-C.md"
+}

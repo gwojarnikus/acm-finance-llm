@@ -1,0 +1,917 @@
+{
+  "$schema": "ad-hoc — patrz akm-eval-pro-v1-readme.md",
+  "rubric_id": "akm-eval-pro-v1",
+  "version": "1.0",
+  "created_at": "2026-05-16",
+  "status": "approved",
+  "source_spec": "akm-eval-pro-v1-spec.md",
+  "readme": "akm-eval-pro-v1-readme.md",
+  "metadata": {
+    "purpose": "Rubryk ewaluacyjny dla wieloagentowego systemu AKM w domenie finansowej. Operacjonalizuje wymagania Eksperta Finansowego (SME).",
+    "applies_to": ["AKM (27 przebiegów)", "Baseline B1 (27)", "Reference R1 (6)"],
+    "total_responses": 60,
+    "criteria_count": 30,
+    "dimensions_count": 5,
+    "language": "PL/EN bilingual definitions",
+    "evaluation_layers": ["LLM-judge (Etap 3)", "Expert (Etap 6)"]
+  },
+  "scale": {
+    "min": 0,
+    "max": 10,
+    "type": "continuous",
+    "anchors_status": "orientacyjne; finalne BARS w Etapie 2a (kalibracja na R1)",
+    "reference": "Smith & Kendall (1963)"
+  },
+  "scoring_function": {
+    "formula": "S_final = lambda × Σ_d (w_d × mean(s_{d,i}))",
+    "explanation": "Wynik globalny = mnożnik kary λ × suma po wymiarach (waga wymiaru × średnia ocen kryteriów w wymiarze).",
+    "subweight_note": "Kryterium B6 ma waga sub-kryterialna 0.5× — w obliczaniu mean() B-wymiaru wartość B6 zmniejszona przez 0.5."
+  },
+  "soft_veto": {
+    "enabled": true,
+    "lambda_active": 0.5,
+    "lambda_inactive": 1.0,
+    "max_score_with_active_veto": 5.0,
+    "critical_criteria": [
+      {
+        "id": "A1",
+        "threshold": 3.0,
+        "condition": "always",
+        "rationale": "Brak ugruntowania danych dyskwalifikuje raport finansowy."
+      },
+      {
+        "id": "A2",
+        "threshold": 2.0,
+        "condition": "fabrication_detected",
+        "rationale": "Fabrykacja źródeł (URL nie istnieje, autor zmyślony) — λ aktywne nawet przy poprawnej formie cytowania pozostałych."
+      },
+      {
+        "id": "D4",
+        "threshold": 2.0,
+        "condition": "always",
+        "rationale": "Próg obniżony z 3.0 (draft) do 2.0 — λ aktywuje się tylko przy wyraźnych sprzecznościach arytmetycznych, nie drobnych nieścisłościach. Mitygacja ryzyka błędu LLM-judge w D4."
+      }
+    ],
+    "validation_required": "Pilot 2a na 6 R1 — weryfikacja częstości false-positive λ=0.5."
+  },
+  "dimensions": [
+    {
+      "id": "A",
+      "name_pl": "Rygor Epistemiczny",
+      "name_en": "Epistemic Rigor",
+      "weight": 0.25,
+      "rationale": "Fundament Bezpieczeństwa. W finansach koszt błędu faktograficznego jest asymetrycznie wysoki względem korzyści z płynności językowej.",
+      "criteria": [
+        {
+          "id": "A1",
+          "name_pl": "Uziemienie Danych",
+          "name_en": "Data Grounding Precision",
+          "definition": "Czy każdy fakt liczbowy lub stwierdzenie ekspozycyjne posiada przypis bibliograficzny w APA 7 z możliwą do weryfikacji datą i autorem.",
+          "scale_anchors": {
+            "0": "Brak jakichkolwiek źródeł.",
+            "2": "Pojedyncze cytowania, większość faktów bez przypisów.",
+            "5": "~50% faktów ugruntowanych; sekcja Sources niekompletna.",
+            "8": "Każdy fakt ma precyzyjne źródło z datą; maks. 1–2 fakty bez cytowania.",
+            "10": "Pełne ugruntowanie + przypisy zgodne z APA 7 + spójność dat dostępu."
+          },
+          "evaluation_method": {
+            "type": "static_analysis",
+            "scoring_rule": "s = 10 × (grounded_facts / total_facts)",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "asymmetry": {
+            "AKM": "Sekcja **Sources:** w APA 7 (wymóg promptu).",
+            "B1": "Cytowania w treści, bez wydzielonej sekcji.",
+            "R1": "Inline citeturn/przypisy + sources_count_reported w metadanych (NIE liczone do scoringu)."
+          },
+          "is_critical": true,
+          "sources": ["Lithgow-Serrano et al., 2025", "Lewis et al., 2020"],
+          "spec_section": "3.A1"
+        },
+        {
+          "id": "A2",
+          "name_pl": "Weryfikowalność Źródeł",
+          "name_en": "Source Auditability",
+          "definition": "Czy podane źródła są realne i czy faktycznie zawierają cytowane dane.",
+          "scale_anchors": {
+            "0": "Wszystkie źródła sfabrykowane lub niemożliwe do zlokalizowania.",
+            "2": "≥50% źródeł nie istnieje lub URL prowadzi gdzie indziej.",
+            "5": "Połowa źródeł realnych, ale bez weryfikacji treści.",
+            "8": "Wszystkie źródła realne, ≥80% zawiera wskazane dane.",
+            "10": "Pełna weryfikacja treści źródeł."
+          },
+          "evaluation_method": {
+            "type": "two_level",
+            "level_1_formal": {"max_score": 6, "tool_use_required": false, "checks": ["author present", "title present", "year present", "URL/DOI present", "URL structure valid", "access date present"]},
+            "level_2_content": {"max_score_addition": 4, "tool_use_required": true, "sample_size": 3, "tool": "WebFetch (required)"},
+            "phase": "P2_product"
+          },
+          "is_critical": true,
+          "critical_condition": "fabrication_detected",
+          "sources": ["Faisal & Tunkel, 2025", "Yeo et al., 2025", "Kotonya & Toni, 2020"],
+          "spec_section": "3.A2"
+        },
+        {
+          "id": "A3",
+          "name_pl": "Kalibracja Niepewności",
+          "name_en": "Epistemic Uncertainty Calibration",
+          "definition": "Precyzja oddzielania faktów twardych od szacunków; użycie języka probabilistycznego tam gdzie dane niepełne.",
+          "scale_anchors": {
+            "2": "Wszystko prezentowane jako pewne — brak modalności.",
+            "5": "Niektóre szacunki sygnalizowane, ale niespójnie.",
+            "8": "Każdy szacunek opatrzony modalnością; przedziały tam gdzie zasadne.",
+            "10": "Eksplicytne distinction known unknowns vs unknown unknowns; przedziały ufności."
+          },
+          "evaluation_method": {
+            "type": "marker_search",
+            "markers": ["approximately", "likely", "around", "between X and Y", "estimated", "may", "could", "uncertain"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "asymmetry": {
+            "AKM": "Ocena z tekstu raportu.",
+            "B1": "Ocena z tekstu raportu.",
+            "R1": "Bonus self-reported confidence_reported_pct/key_data_limitations_reported — IGNOROWANE w scoringu (jednolitość)."
+          },
+          "is_critical": false,
+          "sources": ["Tonmoy et al., 2024", "Belz, Thomson, Reiter, & Mille, 2023"],
+          "spec_section": "3.A3"
+        },
+        {
+          "id": "A4",
+          "name_pl": "Świadomość Czasowa",
+          "name_en": "Temporal Awareness",
+          "definition": "Poprawna identyfikacja relacji między datą treningu modelu, datą bieżącą a datą danych źródłowych. Unikanie anachronizmów.",
+          "scale_anchors": {
+            "2": "Anachronizmy (cytowanie ostatnich danych sprzed cutoff bez ostrzeżenia).",
+            "5": "Daty obecne, ale brak refleksji nad cutoff.",
+            "8": "Jasne rozróżnienie as of [date] dla danych; deklaracja Today is... spójna z treścią.",
+            "10": "Eksplicytne ostrzeżenia o ograniczonej aktualności + uzasadnienie reprezentatywności."
+          },
+          "evaluation_method": {
+            "type": "static_analysis",
+            "checks": ["facts have dates", "dates plausible", "cutoff awareness present"],
+            "context_required": "models metadata field",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Lithgow-Serrano et al., 2025"],
+          "spec_section": "3.A4"
+        },
+        {
+          "id": "A5",
+          "name_pl": "Odporność na Halucynacje Common Sense",
+          "name_en": "Common Sense Robustness",
+          "definition": "Brak generowania absurdów ekonomicznych (np. ujemne stopy przy hiperinflacji bez wyjaśnienia, marża netto > 100%).",
+          "scale_anchors": {
+            "2": "Wyraźne absurdy nieskorygowane.",
+            "5": "Pojedyncze wątpliwe stwierdzenia.",
+            "8": "Wszystkie stwierdzenia ekonomicznie sensowne; pojedyncze paradoksy uzasadnione.",
+            "10": "Aktywne identyfikowanie i wyjaśnianie kontr-intuicyjnych zjawisk."
+          },
+          "evaluation_method": {
+            "type": "red_flag_check",
+            "red_flags": ["negative values where impossible", "ratio > 100% where impossible", "violation of basic economic law"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Tonmoy et al., 2024", "Rystrøm & Enevoldsen, 2024"],
+          "spec_section": "3.A5"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "name_pl": "Jakość Procesu Analitycznego",
+      "name_en": "Analytical Process Quality",
+      "weight": 0.20,
+      "rationale": "Jakość Wnioskowania. Ocena logiki i mitygacji błędów poznawczych.",
+      "criteria": [
+        {
+          "id": "B1",
+          "name_pl": "Dekompozycja Wielowymiarowa",
+          "name_en": "Multi-dimensional Decomposition",
+          "definition": "Rozbicie problemu na wystarczającą liczbę wymiarów (makro, mikro, prawny, techniczny, behawioralny).",
+          "scale_anchors": {
+            "2": "Tylko jeden wymiar.",
+            "5": "2–3 wymiary, powierzchowne.",
+            "8": "≥4 wymiary z umiarkowaną głębią.",
+            "10": "≥5 wymiarów + jawna refleksja nad ich relacjami."
+          },
+          "evaluation_method": {
+            "type": "structural_analysis",
+            "per_case_minimums": {
+              "S1": ["fiskalny", "sektorowy", "EU law"],
+              "S2": ["ALM", "makro", "regulacyjny"],
+              "S3": ["fiskalny", "demograficzny", "społeczny"]
+            },
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Liu et al., 2023"],
+          "spec_section": "4.B1"
+        },
+        {
+          "id": "B2",
+          "name_pl": "Łańcuch Przyczynowo-Skutkowy",
+          "name_en": "Causal Chain Robustness",
+          "definition": "Brak przeskoków logicznych między diagnozą a wnioskami. Każdy wniosek wynika z konkretnych przesłanek.",
+          "scale_anchors": {
+            "0": "Non sequitur — wnioski nie wynikają z analizy.",
+            "5": "Większość wniosków uzasadniona, 2–3 luki logiczne.",
+            "8": "Solidna logika; pojedyncze drobne przeskoki.",
+            "10": "Żelazna logika; każde twierdzenie odwołuje się do konkretnej przesłanki."
+          },
+          "evaluation_method": {
+            "type": "causal_tree",
+            "scoring_rule": "s = 10 × (grounded_conclusions / total_conclusions)",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Wei et al., 2022"],
+          "spec_section": "4.B2"
+        },
+        {
+          "id": "B3",
+          "name_pl": "Wykrywanie Błędów Poznawczych",
+          "name_en": "Cognitive Bias Mitigation",
+          "definition": "Wolność od confirmation bias, anchoring bias, recency bias, availability heuristic.",
+          "scale_anchors": {
+            "2": "Wyraźny bias (cytowanie tylko źródeł potwierdzających).",
+            "5": "Niektóre biasy obecne, ale raport prezentuje też kontrargumenty.",
+            "8": "Aktywna mitygacja co najmniej 2 biasów.",
+            "10": "Eksplicytna refleksja nad własnymi biasami + konkretne techniki (np. pre-mortem)."
+          },
+          "evaluation_method": {
+            "type": "pattern_check",
+            "patterns": [
+              {"name": "confirmation_bias", "check": "czy raport cytuje tylko źródła potwierdzające?", "max_points": 2},
+              {"name": "anchoring", "check": "czy pierwsza wartość liczbowa nadmiernie wpływa na dalsze wnioski?", "max_points": 2},
+              {"name": "recency", "check": "czy raport dominuje świeże źródła (<6 mies.) ignorując fundamentalne starsze prace?", "max_points": 2},
+              {"name": "survivorship", "check": "czy raport bierze pod uwagę tylko successful cases?", "max_points": 2}
+            ],
+            "scoring_rule": "s = 10 × (sum_points / 8)",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Coppolillo, Manco, & Aiello, 2025", "Ferrara, 2023", "Zhu, Weissburg, Zhang, & Wang, 2024"],
+          "spec_section": "4.B3"
+        },
+        {
+          "id": "B4",
+          "name_pl": "Analiza Efektów Drugiego Rzędu",
+          "name_en": "Second-Order Thinking",
+          "definition": "Uwzględnienie niebezpośrednich konsekwencji decyzji (reakcja konkurencji, sprzężenia zwrotne, efekty behawioralne).",
+          "scale_anchors": {
+            "2": "Tylko bezpośrednie konsekwencje.",
+            "5": "1–2 efekty drugiego rzędu, powierzchownie.",
+            "8": "≥3 efekty drugiego rzędu z analizą interakcji.",
+            "10": "Efekty drugiego i trzeciego rzędu; explicite What could go wrong?"
+          },
+          "evaluation_method": {
+            "type": "marker_search",
+            "markers": ["would trigger", "in response", "second-order", "cascade", "feedback loop"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Liu et al., 2023"],
+          "spec_section": "4.B4"
+        },
+        {
+          "id": "B5",
+          "name_pl": "Analiza Scenariuszowa",
+          "name_en": "Scenario Modeling",
+          "definition": "Przedstawienie wachlarza scenariuszy (bazowy/pesymistyczny/optymistyczny) z prawdopodobieństwem lub warunkiem.",
+          "scale_anchors": {
+            "2": "Tylko 1 scenariusz (deterministycznie).",
+            "5": "2 scenariusze.",
+            "8": "3 scenariusze z opisem warunków.",
+            "10": "3+ scenariusze z prawdopodobieństwami i triggerami przejścia."
+          },
+          "evaluation_method": {
+            "type": "structural_count",
+            "tool_use_required": false,
+            "phase": "P2_product",
+            "note": "Cases nie wymuszają tego w prompcie — niska wartość B5 to sygnał, nie dyskwalifikacja."
+          },
+          "is_critical": false,
+          "sources": ["Axtell & Farmer, 2025"],
+          "spec_section": "4.B5"
+        },
+        {
+          "id": "B6",
+          "name_pl": "Innowacyjność Rozwiązania",
+          "name_en": "Solution Novelty",
+          "definition": "Wykroczenie poza banalne rekomendacje; wniesienie wartości eksperckiej (insight).",
+          "scale_anchors": {
+            "2": "Standardowe rekomendacje z podręcznika.",
+            "5": "Trafne, ale przewidywalne.",
+            "8": "Co najmniej jeden niestandardowy insight.",
+            "10": "Synteza dwóch lub więcej obszarów wiedzy w nowatorski sposób."
+          },
+          "evaluation_method": {
+            "type": "baseline_comparison",
+            "baseline_required": "3–5 standardowych rekomendacji per case (TBD do napisania)",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "subweight": 0.5,
+          "subweight_rationale": "Asymetria AKM (open-weights) vs R1 (Deep Research z dostępem do recent literature) — kryterium pomocnicze, nie make-or-break.",
+          "is_critical": false,
+          "sources": ["Orr & Kang, 2024"],
+          "spec_section": "4.B6"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "name_pl": "Dynamika Wieloagentowa",
+      "name_en": "Multi-Agent Dynamics",
+      "weight": 0.20,
+      "rationale": "Weryfikacja Architektury. Ocena śladów efektywnej debaty wieloagentowej w produkcie końcowym (podejście funkcjonalne).",
+      "evaluation_note": "Wszystkie kryteria C oceniane z finalnego MD dla AKM/B1/R1. Materiał step-JSON AKM wykorzystywany w Etapie 4 (poza rubrykiem).",
+      "criteria": [
+        {
+          "id": "C1",
+          "name_pl": "Zintegrowana Antycypacja Krytyki",
+          "name_en": "Integrated Counter-Argumentation",
+          "definition": "Czy raport samodzielnie identyfikuje słabe punkty swojej tezy i adresuje je przed ich wystąpieniem.",
+          "scale_anchors": {
+            "2": "Jednostronna narracja, brak kontrargumentów.",
+            "5": "Pojedyncze limitations wymienione bez analizy.",
+            "8": "Sekcja Risks/Limitations z aktywnym obalaniem zarzutów.",
+            "10": "Kontrargumenty wbudowane w narrację + eksplicytne steel-manning opozycyjnych pozycji."
+          },
+          "evaluation_method": {
+            "type": "marker_search",
+            "markers": ["However", "Critics may argue", "Counter to", "Risk", "Limitation"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "research_hypothesis": "AKM > B1 na C1 (efekt pracy Krytyka).",
+          "is_critical": false,
+          "sources": ["Chan, Chen, Su, Yu, Xue, Zhang, Fu, & Liu, 2023", "Du, Y., Li, Torralba, Tenenbaum, & Mordatch, 2023"],
+          "spec_section": "5.C1"
+        },
+        {
+          "id": "C2",
+          "name_pl": "Wielostronność Perspektywy",
+          "name_en": "Multiperspectival Synthesis",
+          "definition": "Czy rozwiązanie integruje sprzeczne punkty widzenia (Zysk vs Ryzyko, Krótki vs Długi Termin, Indywidualny vs Społeczny).",
+          "scale_anchors": {
+            "2": "Płaska perspektywa (tylko optymistyczna).",
+            "5": "2 perspektywy wymienione, nieintegrowane.",
+            "8": "3+ perspektywy z próbą syntezy.",
+            "10": "Synteza heglowska (teza + antyteza → synteza)."
+          },
+          "evaluation_method": {
+            "type": "perspective_identification",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Liang et al., 2023"],
+          "spec_section": "5.C2"
+        },
+        {
+          "id": "C3",
+          "name_pl": "Obiektywizm i Brak Asekuranctwa",
+          "name_en": "Objectivity & Sycophancy Mitigation",
+          "definition": "Czy raport unika nadmiernej uprzejmości i zadowalania użytkownika.",
+          "scale_anchors": {
+            "2": "Styl marketingowy, nadmiernie optymistyczny.",
+            "5": "Neutralny, ale unika trudnych wniosków.",
+            "8": "Bezstronny osąd, podejmuje trudne konkluzje.",
+            "10": "Brutalna szczerość — konkluzja może być negatywna dla użytkownika."
+          },
+          "evaluation_method": {
+            "type": "marker_search_dual",
+            "negative_markers": ["excellent", "absolutely", "perfect"],
+            "positive_markers": ["not recommended", "I cannot endorse", "this would fail"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Sharma et al., 2023 (sycophancy)"],
+          "spec_section": "5.C3"
+        },
+        {
+          "id": "C4",
+          "name_pl": "Gęstość Informacyjna",
+          "name_en": "Insight Density",
+          "definition": "Stosunek unikalnych insights do objętości tekstu. Eliminacja waty słownej.",
+          "scale_anchors": {
+            "2": "Wata słowna, powtarzanie tych samych tez.",
+            "5": "Mieszanka insights i powtórzeń.",
+            "8": "Każde zdanie wnosi wartość.",
+            "10": "Skondensowana forma z priorytetyzowaniem informacji."
+          },
+          "evaluation_method": {
+            "type": "insight_per_kword",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Mendonça, Trancoso, & Lavie, 2024", "Zheng, 2024"],
+          "spec_section": "5.C4"
+        },
+        {
+          "id": "C5",
+          "name_pl": "Audytowalność Procesu",
+          "name_en": "Process Auditability",
+          "definition": "Czy raport pozwala odtworzyć ślad wnioskowania od danych do wniosku — transparentność decyzji metodycznych.",
+          "scale_anchors": {
+            "2": "Brak ujawnienia metodyki — wynik bez wyjaśnienia drogi.",
+            "5": "Częściowa transparentność — opisana metoda, brak parametrów.",
+            "8": "Pełne ujawnienie założeń, parametrów i decyzji metodycznych.",
+            "10": "Plus eksplicytne wskazanie gdzie inne decyzje zmieniłyby wynik (sensitivity)."
+          },
+          "evaluation_method": {
+            "type": "methodology_check",
+            "markers": ["we assume", "this estimate uses", "our parameter X = Y because", "Methodology", "Assumptions"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "asymmetry": {
+            "AKM": "Dodatkowo step-JSON z _dbg_* — audytowalne na poziomie systemu (poza rubrykiem).",
+            "B1": "Tylko finalna odpowiedź.",
+            "R1": "Materiał wsparcia: confidence_justification_reported (NIE liczone)."
+          },
+          "is_new": true,
+          "is_critical": false,
+          "rationale_new": "Hipoteza H_Comp_2 (draft §3.6.3) wymagała eksplicytnej operacjonalizacji.",
+          "sources": ["Arrieta et al., 2020", "Faisal & Tunkel, 2025", "Yeo, Van Der Heever, Mao et al., 2025", "Vakilzadeh, Eulerich, & Sanatizadeh, 2024"],
+          "spec_section": "5.C5"
+        },
+        {
+          "id": "C6",
+          "name_pl": "Jakość Rozstrzygnięcia Dialektycznego",
+          "name_en": "Dialectical Resolution Quality",
+          "definition": "Czy raport rozstrzyga zidentyfikowane sprzeczności (nie tylko je wymienia); jakość argumentacji za wybraną pozycją.",
+          "scale_anchors": {
+            "2": "Sprzeczności pomijane lub fałszywie ujednolicane.",
+            "5": "Sprzeczności wymienione, brak rozstrzygnięcia.",
+            "8": "Sprzeczności wymienione + uzasadnione preferowane rozstrzygnięcie.",
+            "10": "Plus odniesienie do kryterium rozstrzygającego (utilitarne/deontologiczne/pareto) + analiza wrażliwości."
+          },
+          "evaluation_method": {
+            "type": "contradiction_resolution_check",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "asymmetry": {
+            "AKM": "Materiał weryfikacyjny w last_critics step-JSON (czy uwagi krytyka rozstrzygnięte) — POZA scoringiem.",
+            "B1": "Ocena z produktu końcowego.",
+            "R1": "Ocena z produktu końcowego."
+          },
+          "is_new": true,
+          "is_critical": false,
+          "rationale_new": "C2 mierzy obecność perspektyw, C6 mierzy jakość rozstrzygnięcia — divergent vs convergent (Liang et al., 2023).",
+          "sources": ["Du, Y., Li, Torralba, Tenenbaum, & Mordatch, 2023", "Cemri et al., 2025", "Borg & Bex, 2020", "Mahmood, Hecher, & Ngomo, 2024"],
+          "spec_section": "5.C6"
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "name_pl": "Specyfika Finansowa",
+      "name_en": "Financial Domain Specificity",
+      "weight": 0.25,
+      "rationale": "Użyteczność Domenowa. Zdolność systemu do generowania wartości rynkowej, zgodności z regulacjami i poprawności numerycznej.",
+      "criteria": [
+        {
+          "id": "D1",
+          "name_pl": "Konkretność Operacyjna",
+          "name_en": "Operational Actionability",
+          "definition": "Zdatność rekomendacji do wdrożenia (ogólniki vs konkretne działania z parametrami).",
+          "scale_anchors": {
+            "2": "Należy rozważyć poprawę — ogólniki bez parametrów.",
+            "5": "Kierunek wskazany, brak konkretów.",
+            "8": "Konkretna rekomendacja z parametrami (czas, kwota, instrument).",
+            "10": "Plus plan implementacji z fazami i miarami sukcesu."
+          },
+          "evaluation_method": {
+            "type": "actionable_items_count",
+            "checks_per_item": ["co", "ile", "kiedy"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Yang, Zhang et al., 2024"],
+          "spec_section": "6.D1"
+        },
+        {
+          "id": "D2",
+          "name_pl": "Zgodność z Regulacjami",
+          "name_en": "Regulatory Compliance",
+          "definition": "Ścisłe przestrzeganie ram prawnych właściwych dla case.",
+          "scale_anchors": {
+            "2": "Naruszenia lub ignorowanie regulacji.",
+            "5": "Świadomość regulacji, brak konkretnego odniesienia.",
+            "8": "Konkretne paragrafy/dyrektywy cytowane poprawnie.",
+            "10": "Plus analiza interakcji między regulacjami."
+          },
+          "evaluation_method": {
+            "type": "per_case_briefing_check",
+            "per_case_briefings": {
+              "S1": "TBD: VAT Dir. 2006/112/EC, TFEU art. 107/110, IRAP precedent C-475/03",
+              "S2": "TBD: IORP II, Solvency II, polskie OFE/PPK",
+              "S3": "TBD: TUE art. 153, włoskie Reddito di Cittadinanza"
+            },
+            "tool_use_required": false,
+            "phase": "P2_product",
+            "briefing_status": "to_be_written"
+          },
+          "is_critical": false,
+          "sources": ["Lumenova, 2025", "Bailey & Schmidt, 2025"],
+          "spec_section": "6.D2"
+        },
+        {
+          "id": "D3",
+          "name_pl": "Odporność na Ryzyko i Asymetria",
+          "name_en": "Risk & Asymmetry Resilience",
+          "definition": "Ocena profilu ryzyka/zysku; uwzględnienie kosztu kapitału, asymetrii rozkładu zwrotów, Czarnych Łabędzi.",
+          "scale_anchors": {
+            "2": "Pomijanie ryzyka; guaranteed returns.",
+            "5": "Wzmianka o ryzyku, brak kwantyfikacji.",
+            "8": "Risk-reward ratio + analiza wrażliwości.",
+            "10": "Plus stress test scenariuszy ekstremalnych z kwantyfikacją ekspozycji."
+          },
+          "evaluation_method": {
+            "type": "risk_metrics_check",
+            "expected_metrics": ["VaR", "CVaR", "Sharpe", "beta", "max drawdown"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Axtell & Farmer, 2025", "Lopez-Lira, 2025"],
+          "spec_section": "6.D3"
+        },
+        {
+          "id": "D4",
+          "name_pl": "Spójność Numeryczno-Logiczna",
+          "name_en": "Internal Quantitative Consistency",
+          "definition": "Weryfikacja poprawności arytmetycznej. Czy składowe sumują się; czy wskaźniki wynikają z danych.",
+          "scale_anchors": {
+            "0": "Wyraźna sprzeczność numeryczna.",
+            "2": "Wiele drobnych nieścisłości.",
+            "5": "Większość poprawne, 1–2 nieścisłości.",
+            "8": "Wszystkie obliczenia spójne.",
+            "10": "Plus jawne wyprowadzenia z weryfikowalnymi krokami."
+          },
+          "evaluation_method": {
+            "type": "arithmetic_check_with_tool",
+            "tool_use_required": true,
+            "tools": ["Python interpreter", "calculator"],
+            "na_rule": "Brak danych liczbowych → D4 = N/A (nie 0). Ciężar penalizacji na D1/A1.",
+            "pilot_validation": "Drugi sędzia obligatoryjny dla 6 R1; jeśli ICC < 0.6 → przeniesione do oceny eksperckiej.",
+            "phase": "P2_product"
+          },
+          "is_critical": true,
+          "critical_threshold": 2.0,
+          "critical_threshold_rationale": "Obniżony z 3.0 (draft) — mitygacja ryzyka błędu LLM w arytmetyce.",
+          "sources": ["Tonmoy et al., 2024", "Cemri et al., 2025"],
+          "spec_section": "6.D4"
+        },
+        {
+          "id": "D5",
+          "name_pl": "Adekwatność Metodyczna",
+          "name_en": "Metric Selection Suitability",
+          "definition": "Poprawność doboru narzędzi analitycznych do klasy aktywów/problemu (FFO dla REIT, VaR dla ryzyka rynkowego, DCF vs likwidacyjna).",
+          "scale_anchors": {
+            "2": "Wyraźnie nieadekwatna metoda.",
+            "5": "Adekwatna kategoria, niespecyficzny dobór.",
+            "8": "Trafny dobór metryk z uzasadnieniem.",
+            "10": "Plus porównanie z alternatywami i argument dlaczego wybrane."
+          },
+          "evaluation_method": {
+            "type": "per_case_metrics_check",
+            "per_case_metrics": {
+              "S1": ["elasticity", "deadweight loss", "behavioral response", "Laffer curve", "distributional analysis"],
+              "S2": ["duration matching", "real return", "surplus risk", "glide path", "LDI metrics"],
+              "S3": ["poverty gap", "labor supply elasticity", "fiscal multiplier", "dependency ratio"]
+            },
+            "min_metrics_required": 3,
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["De La Cruz, 2025", "Demirtaş & Yılmaz, 2025"],
+          "spec_section": "6.D5"
+        },
+        {
+          "id": "D6",
+          "name_pl": "Dopasowanie do Reżimu Rynkowego",
+          "name_en": "Market Regime Adaptability",
+          "definition": "Stopień dostosowania strategii do zdiagnozowanej fazy cyklu (hossa/bessa/stagflacja).",
+          "scale_anchors": {
+            "2": "Strategia ignorująca reżim.",
+            "5": "Wzmianka o reżimie bez dostosowania.",
+            "8": "Strategia dostosowana z uzasadnieniem.",
+            "10": "Plus warianty dla różnych reżimów i triggery przejścia."
+          },
+          "evaluation_method": {
+            "type": "regime_alignment_check",
+            "per_case_relevance": {"S1": "medium", "S2": "high", "S3": "medium"},
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Adrian, Boyarchenko, & Giannone, 2021"],
+          "spec_section": "6.D6"
+        },
+        {
+          "id": "D7",
+          "name_pl": "Ekonomika Języka",
+          "name_en": "Information Density (Linguistic)",
+          "definition": "Stosunek treści merytorycznej do liczby słów. Profesjonalne raporty finansowe muszą być zwięzłe.",
+          "scale_anchors": {
+            "2": "Lana woda, powtórzenia.",
+            "5": "Mieszanka.",
+            "8": "Każdy akapit wnosi wartość.",
+            "10": "Skondensowane, executive-grade."
+          },
+          "evaluation_method": {
+            "type": "subjective_judge",
+            "auxiliary_signal": "word_count vs unique_claims_count",
+            "note": "BERTScore/ROUGE odrzucone — decyzja 2026-05-16.",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "related_to": "C4 (C4 mierzy insights/1000w; D7 mierzy zwięzłość)",
+          "is_critical": false,
+          "sources": ["Mendonça et al., 2024"],
+          "spec_section": "6.D7"
+        },
+        {
+          "id": "D8",
+          "name_pl": "Spójność Narracyjna Raportu",
+          "name_en": "Report Coherence",
+          "definition": "Czy dokument czyta się jak dzieło jednego autora, mimo wewnętrznej złożoności procesu MAS.",
+          "scale_anchors": {
+            "2": "Wyraźne szwy (Krytyk zauważył, że...).",
+            "5": "Niespójności stylu między sekcjami.",
+            "8": "Spójny styl i głos.",
+            "10": "Plus narrative arc (problem → analiza → rozstrzygnięcie)."
+          },
+          "evaluation_method": {
+            "type": "coherence_assessment",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "research_hypothesis": "Dobry AKM ma wysokie C1 + D8 jednocześnie (ślad krytyki + spójność).",
+          "is_critical": false,
+          "sources": ["Mendonça, Trancoso, & Lavie, 2024", "Zheng, 2024"],
+          "spec_section": "6.D8"
+        }
+      ]
+    },
+    {
+      "id": "E",
+      "name_pl": "Parametry Techniczne",
+      "name_en": "Technical Parameters",
+      "weight": 0.10,
+      "rationale": "Higiena Systemowa. Aspekty formatowania, stylu i dyscypliny outputu.",
+      "criteria": [
+        {
+          "id": "E1",
+          "name_pl": "Formatowanie Strukturalne",
+          "name_en": "Format Compliance",
+          "definition": "Zgodność z zadanym schematem (Markdown, sekcje, APA 7).",
+          "scale_anchors": {
+            "2": "Łamie podstawowy schemat.",
+            "5": "Schemat częściowo zachowany.",
+            "8": "Schemat zachowany; drobne odstępstwa.",
+            "10": "Pełna zgodność."
+          },
+          "evaluation_method": {
+            "type": "schema_validation_per_type",
+            "schemas_per_type": {
+              "AKM": "[ANALYST] header + sekcje 1-4 (Problem Diagnosis, Data Verification, Analysis, Recommendation) + **Sources:** APA 7",
+              "B1": "Bez nagłówka, sekcje swobodne, cytowania w treści",
+              "R1": "DR + self-reported metadata"
+            },
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Chen & Zhang, 2024"],
+          "spec_section": "7.E1"
+        },
+        {
+          "id": "E2",
+          "name_pl": "Przestrzeganie Ograniczeń Negatywnych",
+          "name_en": "Negative Constraints",
+          "definition": "Unikanie działań zakazanych w prompcie (brak back-references, brak sygnalizowania odpowiedzi na krytykę itp.).",
+          "scale_anchors": {
+            "2": "Wielokrotne naruszenia.",
+            "5": "Pojedyncze naruszenia.",
+            "8": "Brak naruszeń.",
+            "10": "Plus aktywne sygnalizowanie przestrzegania."
+          },
+          "evaluation_method": {
+            "type": "checklist_per_type",
+            "checklists": {
+              "AKM": [
+                "Brak back-references (as before, as stated earlier)",
+                "Brak sygnalizowania odpowiedzi na krytykę",
+                "Język odpowiedzi = język pytania",
+                "APA 7 dla wszystkich cytowań",
+                "Today is {{date}} obecne i spójne z treścią",
+                "Sekcja Sources kompletna"
+              ],
+              "B1": [
+                "Język odpowiedzi = język pytania",
+                "Cytowania mają autora + rok"
+              ],
+              "R1": [
+                "Self-reported metadata na końcu",
+                "confidence_reported_pct w przedziale 0–100",
+                "key_data_limitations_reported >= 1 stwierdzenie"
+              ]
+            },
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Hewing & Leinhos, 2024"],
+          "spec_section": "7.E2"
+        },
+        {
+          "id": "E3",
+          "name_pl": "Język i Styl",
+          "name_en": "Tone Consistency",
+          "definition": "Utrzymanie profesjonalnego, chłodnego tonu eksperckiego.",
+          "scale_anchors": {
+            "2": "Styl marketingowy lub potoczny.",
+            "5": "Mieszanka.",
+            "8": "Konsekwentny ekspercki ton.",
+            "10": "Plus terminology consistency."
+          },
+          "evaluation_method": {
+            "type": "tone_marker_check",
+            "anti_markers": ["wykrzykniki", "slang", "idiomy nieformalne"],
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "is_critical": false,
+          "sources": ["Hewing & Leinhos, 2024"],
+          "spec_section": "7.E3"
+        },
+        {
+          "id": "E4",
+          "name_pl": "Dyscyplina Długości Wyniku",
+          "name_en": "Output Length Discipline",
+          "definition": "Czy długość raportu jest proporcjonalna do złożoności pytania; brak rozwadniania (verbosity bias).",
+          "scale_anchors": {
+            "2": "Skrajnie krótki (<500 słów) lub skrajnie długi (>8000 słów) bez uzasadnienia.",
+            "5": "W przedziale, ale z wyraźnym balastem.",
+            "8": "Adekwatna długość, niska redundancja.",
+            "10": "Optymalna długość; każda sekcja proporcjonalna do wagi tematu."
+          },
+          "evaluation_method": {
+            "type": "length_with_self_warning",
+            "expected_word_count_per_case": {"S1": [2500, 5000], "S2": [2500, 5000], "S3": [2500, 5000]},
+            "judge_self_warning": "you tend to prefer longer responses — penalize length without substance",
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "asymmetry": {
+            "AKM": "Pomiar zewnętrzny słów MD.",
+            "B1": "Pomiar zewnętrzny słów MD.",
+            "R1": "output_word_count_reported jako self-reported."
+          },
+          "is_new": true,
+          "is_critical": false,
+          "rationale_new": "Verbosity bias to znana słabość LLM-judge; wymiar E nie miał kryterium długości.",
+          "sources": ["Saito, Wachi, Wataoka, & Akimoto, 2023", "Hu, Song, Zhang, Xiao, Wang, Chen, Yuan, Lian, Ding, & Xiong, 2025", "Coppolillo, Manco, & Aiello, 2025"],
+          "spec_section": "7.E4"
+        },
+        {
+          "id": "E5",
+          "name_pl": "Sygnały Replikowalności",
+          "name_en": "Reproducibility Signals",
+          "definition": "Czy raport zawiera informacje pozwalające innemu analitykowi odtworzyć rozumowanie (założenia, parametry, daty, źródła danych, metodyka).",
+          "scale_anchors": {
+            "2": "Brak ujawnienia założeń; black box.",
+            "5": "Niektóre założenia podane, większość niejawna.",
+            "8": "Wszystkie kluczowe założenia i parametry ujawnione.",
+            "10": "Plus checklist replikacji (dane, kroki, potencjalne odchylenia)."
+          },
+          "evaluation_method": {
+            "type": "reproducibility_checklist",
+            "checklist_adapted_from": "Dodge et al., 2021 (NLP Reproducibility Checklist)",
+            "items": [
+              {"check": "Założenia liczbowe (np. GDP 2026 = 3.5 trillion PLN) ujawnione?", "points": 2},
+              {"check": "Daty danych źródłowych ujawnione?", "points": 2},
+              {"check": "Metoda kalkulacji opisana?", "points": 2},
+              {"check": "Parametry modeli (np. stopa dyskontowa) ujawnione?", "points": 2},
+              {"check": "Zakres czasowy analizy ujawniony?", "points": 2}
+            ],
+            "max_score": 10,
+            "tool_use_required": false,
+            "phase": "P2_product"
+          },
+          "asymmetry": {
+            "AKM": "Ocena z tekstu raportu.",
+            "B1": "Ocena z tekstu raportu.",
+            "R1": "Częściowo wbudowane w confidence_justification_reported/key_data_limitations_reported — IGNOROWANE w scoringu."
+          },
+          "related_to": "C5 (C5 mierzy czy droga pokazana; E5 mierzy czy parametry pozwalają na odtworzenie)",
+          "is_new": true,
+          "is_critical": false,
+          "rationale_new": "Kryzys replikowalności w ewaluacji LLM (Belz 2023, Kosch & Feger 2024); brakowało operacjonalizacji na poziomie produktu.",
+          "sources": ["Dodge et al., 2021", "Belz, Mille, & Howcroft, 2020", "Belz, Thomson, Reiter, & Mille, 2023", "Kosch & Feger, 2024"],
+          "spec_section": "7.E5"
+        }
+      ]
+    }
+  ],
+  "evaluation_protocol": {
+    "llm_judge": {
+      "_note": "Etap 3 dzieli się na 3a (pairwise per wymiar) i 3b (pełny rubryk na próbie kalibracyjnej). JSON ten jest źródłem prawdy dla 3b i Etapu 6; dla 3a używane są tylko nazwy i rationale wymiarów.",
+      "etap_3a_pairwise": {
+        "stage": "Etap 3a specu ewaluacji",
+        "uses_full_rubric": false,
+        "uses_from_json": ["dimensions[].id", "dimensions[].name_en", "dimensions[].rationale"],
+        "format": "5 pytań per para raportów (jedno per wymiar A/B/C/D/E): 'Który raport lepszy w wymiarze X? A / B / tie'",
+        "scope": "S1 only — wybrane pary AKM↔R1-C (9), B1↔R1-C (3), AKM↔B1 (wybrane)",
+        "blind": true,
+        "output_path": "sources/data/evaluation/llm-judge/pairwise/",
+        "output_file_format": "judge-pairwise-S1-<A>-vs-<B>.json"
+      },
+      "etap_3b_full_rubric": {
+        "stage": "Etap 3b specu ewaluacji",
+        "uses_full_rubric": true,
+        "model_requirements": "Claude Opus 4.x lub GPT-4o (wymagane strong arithmetic reasoning dla D4)",
+        "temperature": 0.0,
+        "tool_use": {
+          "required_for": ["D4"],
+          "optional_for": ["A2"]
+        },
+        "calibration_sample": {
+          "size": 12,
+          "composition": "1 raport z każdej kombinacji grupa × case",
+          "items": ["S1-V1", "S2-V1", "S3-V1", "S1-B1-D-v1", "S2-B1-D-v1", "S3-B1-D-v1", "S1-R1-C", "S2-R1-C", "S3-R1-C", "S1-R1-G", "S2-R1-G", "S3-R1-G"]
+        },
+        "phases": {
+          "P1_process": {
+            "material": "step-JSON dialogue logs",
+            "applies_to": ["AKM"],
+            "dimensions_evaluated": ["B (proces)", "C (proces — opcjonalnie, dla Etapu 4)"]
+          },
+          "P2_product": {
+            "material": "finalny MD",
+            "applies_to": ["AKM", "B1", "R1"],
+            "dimensions_evaluated": ["A", "B (produkt)", "C (funkcjonalnie)", "D", "E"]
+          }
+        },
+        "context_materials": [
+          "per-case briefingi regulacyjne (D2) — TBD",
+          "per-case listy metryk (D5)",
+          "check-listy E2 per typ odpowiedzi"
+        ],
+        "output_path": "sources/data/evaluation/llm-judge/rubric/",
+        "output_file_format": "eval-llm-<case>-<variant>.json",
+        "post_etap_6_analysis": "judge-rubric-calibration.json — cross-model ICC per kryterium (primary vs secondary LLM judge)"
+      }
+    },
+    "cross_model_llm_judge": {
+      "_note": "Etap 6 wykonywany WYŁĄCZNIE przez LLM (decyzja 2026-05-17). Brak ludzkiego eksperta. Cross-model walidacja przez dwa różne modele LLM, ICC liczone cross-model.",
+      "stage": "Etap 6 specu ewaluacji",
+      "primary_judge": {"model": "claude-opus-4-x", "temperature": 0.0, "tool_use": ["Code Execution for D4", "WebFetch for A2 L2"]},
+      "secondary_judge": {"model": "gpt-4o (or other LLM family for cross-model variance)", "temperature": 0.0, "tool_use": ["Python interpreter for D4", "WebFetch for A2 L2"]},
+      "disagreement_resolution": "Jeśli |s_primary - s_secondary| >= 3 punkty na kryterium → flag 'high_disagreement'; final score = mean (z notą). Jeśli >20% kryteriów per raport ma high_disagreement → flag raport dla manual review (inspekcja autora, nie ekspert oceniający).",
+      "calibration_sample_already_done_in_etap_3b": ["S1-V1", "S2-V1", "S3-V1", "S1-B1-D-v1", "S2-B1-D-v1", "S3-B1-D-v1", "S1-R1-C", "S2-R1-C", "S3-R1-C", "S1-R1-G", "S2-R1-G", "S3-R1-G"],
+      "blind_evaluation": true,
+      "final_score_per_criterion": "mean(primary, secondary)",
+      "icc_method": "ICC(2,1) cross-model per kryterium; threshold 0.6 dla flag 'low_reliability'",
+      "rationale_no_human": "Decyzja użytkownika 2026-05-17 — wszystkie oceny przez LLM, brak ekspertów ludzkich w workflow."
+    },
+    "bars_calibration": {
+      "stage": "Etap 2a specu ewaluacji",
+      "scope": "6 raportów R1 (S1-S3 × C/G)",
+      "outputs": [
+        "akm-eval-pro-v1-anchors.json — domenowe anchory per kryterium (poziomy 2/5/8)",
+        "ICC dla D4 (decyzja: zostaw w LLM-judge vs przenieś do eksperckiej)",
+        "Walidacja progów Soft Veto"
+      ]
+    }
+  },
+  "open_decisions_status": {
+    "30_criteria_5_6_6_8_5": {"status": "approved", "date": "2026-05-16"},
+    "per_case_briefings_D2_D5": {"status": "pending", "scope": "3 dokumenty po ~1 stronie do napisania"},
+    "soft_veto_expanded": {"status": "approved_pending_pilot", "date": "2026-05-16", "validation": "pilot 2a"},
+    "B6_subweight_0.5": {"status": "approved", "date": "2026-05-16"},
+    "benchmark_framework_md": {"status": "resolved_inline", "decision": "schemat ad-hoc w JSON-ie; brak osobnego pliku"},
+    "R1_metadata_handling": {"status": "approved", "date": "2026-05-16", "decision": "ignorowane jednolicie w scoringu (asymmetry pole tylko informacyjne)"}
+  },
+  "references_full": "Patrz akm-eval-pro-v1-spec.md sekcja 11 (Bibliografia APA 7)"
+}

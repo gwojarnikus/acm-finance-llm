@@ -1,0 +1,43 @@
+{
+    "session_id": "",
+    "case_id": "S3",
+    "run_type": "R1",
+    "variant_id": "R1-C",
+    "models": "OpenAI Deep Research (5.5)",
+    "prompt_set_version": "",
+    "workflow_version": "manual-deep-research",
+    "started_at": "",
+    "finished_at": "",
+    "duration_sec": null,
+    "tokens_input": null,
+    "tokens_output": null,
+    "cost_estimate": null,
+    "search_used": true,
+    "search_calls": null,
+    "search_queries_reported": [
+        "Italy debt to GDP 2025 European Commission spring forecast Italy high debt public debt ratio 2025",
+        "Eurostat Italy old-age dependency ratio 2024 fertility rate 2024 labour force participation unemployment NEET",
+        "OECD Italy employment rate female employment youth NEET 2024 OECD labour market Italy",
+        "Universal basic income fiscal cost OECD IMF paper universal basic income lessons labour supply",
+        "Istat population and household projections base 1 1 2024 Italy 2050 working age population",
+        "Istat births and fertility of the resident population year 2024 Italy",
+        "Istat poverty statistics year 2024 Italy absolute poverty",
+        "Istat non-observed economy national accounts years 2020 2023 Italy",
+        "OECD basic income as a policy option can it add up Italy 158 737",
+        "Finland basic income experiment results employment wellbeing official",
+        "Alaska Permanent Fund universal cash transfer labor market NBER",
+        "Eurostat labour market statistics at regional level Italy Calabria Campania employment 2024"
+    ],
+    "sources_count_reported": 22,
+    "confidence_reported_pct": 86,
+    "confidence_justification_reported": "The fiscal and demographic diagnosis is based mainly on recent official Italian, Eurostat, European Commission, OECD and IMF sources, but long-run behavioural effects of a full Italian UBI remain inherently uncertain because direct evidence is limited.",
+    "key_data_limitations_reported": [
+        "The OECD's Italy-specific budget-neutral UBI illustration is from 2017 and predates the current AdI/SFL welfare architecture.",
+        "Empirical UBI evidence mostly concerns pilots, partial dividends, or non-Italian settings rather than a permanent full-scale UBI in a high-debt euro-area country.",
+        "Some labour-market indicators come from different age bands and reference years, reflecting how official sources publish them.",
+        "Precise fiscal effects depend heavily on UBI design choices not specified in the prompt, especially coverage, treatment of pensioners, and financing mix."
+    ],
+    "output_word_count_reported": 5100,
+    "self_reported_metadata_source": "prompt-section-5",
+    "final_output": "see run-S3-R1-C.md"
+}

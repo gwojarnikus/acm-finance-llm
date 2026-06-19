@@ -1,0 +1,31 @@
+{
+    "session_id": "",
+    "case_id": "S1",
+    "run_type": "R1",
+    "variant_id": "R1-G",
+    "models": "Google Gemini Deep Research (3.1 Pro)",
+    "prompt_set_version": "",
+    "workflow_version": "manual-deep-research",
+    "started_at": "",
+    "finished_at": "",
+    "duration_sec": null,
+    "tokens_input": null,
+    "tokens_output": null,
+    "cost_estimate": null,
+    "search_used": true,
+    "search_calls": null,
+    "search_queries_reported": null,
+    "sources_count_reported": 39,
+    "confidence_reported_pct": 95,
+    "confidence_justification_reported": "Report is constructed using a structural macro-fiscal modeling framework anchored to finalized 2024 GUS enterprise statistics and the estimated 2025 state-budget execution from the Ministry of Finance, with modeling conducted from a mid-2026 perspective incorporating the 2025 JST funding reform. The analysis triangulates official Polish fiscal data with EU legal benchmarks to corroborate the non-viability conclusion of the proposed turnover-tax reform.",
+    "key_data_limitations_reported": [
+        "Tax rate estimations assume static economic behavior (no immediate reduction in gross transaction volumes or change in corporate structures post-implementation).",
+        "In a dynamic macroeconomic setting the introduction of a ~3.53% cumulative tax would trigger severe behavioral responses (business consolidation, transition to informal economies, supply chain contraction) shrinking the tax base and requiring an even higher neutral rate over time.",
+        "Aggregation across diverse sectoral datasets (non-financial enterprises with 10+ employees combined with the distinct micro-enterprise database under 10 employees) carries reconciliation risk despite efforts to prevent double-counting.",
+        "Financial sector revenues are modeled using net operating incomes rather than gross transaction volume to maintain consistency with the economic concept of taxable corporate turnover, which differs from a strict gross-receipts treatment."
+    ],
+    "output_word_count_reported": 3338,
+    "self_reported_metadata_source": "prompt-section-5",
+    "final_output": "see run-S1-R1-G.md",
+    "metadata_completeness_note": "Variant G did not report structured fields required by prompt section 5. Values were filled by derivation from the .md: `sources_count_reported` (39) = count of numbered entries in the `Cytowane prace` bibliography; `output_word_count_reported` (3338) = word count of the body before the bibliography; `confidence_reported_pct` (95) = imputed from Gemini Deep Research self-report pattern (S2-R1-G=95, S3-R1-G=95) and the report's categorical tone (e.g. 'non-viability of the proposed reform'); `confidence_justification_reported` was synthesized from the `Reporting Temporal Bounds`/`Data Synthesis Methodology` narrative. `search_queries_reported` remains null — the model provided no query list in any form."
+}

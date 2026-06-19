@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+title: "ACM Finance LLM — Replication Package"
+message: "If you use this package, please cite both the package and the associated monograph."
+type: dataset
+version: "1.0.0"
+date-released: "2026-06-19"
+license: CC-BY-4.0
+repository-code: "https://github.com/gwojarnikus/acm-finance-llm"
+authors:
+  - family-names: Wojarnik
+    given-names: Grzegorz
+abstract: >-
+  Replication package for the Analyst–Critic–Moderator (ACM, in Polish: AKM)
+  dialogue architecture for large language models, evaluated on financial-analysis
+  tasks. Contains the agent prompts, the AKM-Eval Pro evaluation rubric and LLM-judge
+  templates, the raw multi-agent run traces (ACM, single-LLM baseline, and deep-research
+  reference systems), and the statistical analysis scripts. Companion to the monograph
+  "Generative Artificial Intelligence in Finance: A Dialogue Architecture for Large
+  Language Models."
+keywords:
+  - large language models
+  - multi-agent systems
+  - LLM-as-a-judge
+  - financial analysis
+  - design science research
+  - reproducibility
+preferred-citation:
+  type: book
+  title: "Generative Artificial Intelligence in Finance: A Dialogue Architecture for Large Language Models"
+  authors:
+    - family-names: Wojarnik
+      given-names: Grzegorz
+  year: 2026

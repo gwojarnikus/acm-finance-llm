@@ -1,0 +1,45 @@
+{
+    "done": false,
+    "explanation": "The current Critic notes identify several materially new and unresolved issues that are not repetitions from the Critic History. Specifically: 1) The Analyst still uses an unverified GDP conversion rate (4.0 PLN/USD) despite previous criticism about exchange rate verification needs; 2) The retail sector analysis remains limited to Żabka Group without addressing broader industry composition; 3) EU legal analysis lacks specific Articles 34 and 49 TFEU assessment; 4) Constitutional Tribunal application remains superficial; 5) The 90% effective tax base assumption lacks empirical basis; 6) KSeF implementation timeline verification is missing; 7) OECD Pillar Two compatibility timeline is not addressed; 8) Specific Polish automotive/electronics supply chain data is needed. These issues are materially new or unresolved from previous iterations and represent critical gaps that affect the analysis quality.",
+    "session_id": "1775734844414_6b3acx9e",
+    "start": "2026-04-09T11:55:16.834Z",
+    "end": "2026-04-09T11:55:52.727Z",
+    "tokens_analyst_in": 7775,
+    "tokens_analyst_out": 210,
+    "tokens_critic_in": 7096,
+    "tokens_critic_out": 31,
+    "tokens_moderator_in": 1467,
+    "tokens_moderator_out": 31,
+    "searches_analyst": 4,
+    "searches_critic": 1,
+    "total_llm_tokens": 16610,
+    "total_searches": 5,
+    "_dbg_analyst": {
+        "_steps_count": 4,
+        "_step0_keys": [
+            "action",
+            "observation"
+        ],
+        "_tok_found": {
+            "input": 7775,
+            "output": 210
+        }
+    },
+    "_dbg_critic": {
+        "_steps_count": 2,
+        "_step0_keys": [
+            "action",
+            "observation"
+        ],
+        "_tok_found": {
+            "input": 7096,
+            "output": 31
+        }
+    },
+    "_dbg_moderator": {
+        "_tok_found": {
+            "input": 1467,
+            "output": 31
+        }
+    }
+}

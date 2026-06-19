@@ -1,0 +1,48 @@
+{
+    "done": false,
+    "explanation": "<Brak>",
+    "session_id": "1775752001958_c4p5ylnb",
+    "first_question": "Create an analysis of introducing a universal turnover tax into the Polish tax system that would fully replace PIT and CIT revenues. Use the current Ministry of Finance data on budget revenues. Estimate the turnover tax rate required to preserve budget neutrality. Critically assess the impact of such a reform on low-margin industries, such as retail trade, and its compatibility with European Union law.\r\nAnswer in english.",
+    "step": 1,
+    "all_critics": [],
+    "start": "2026-04-09T16:26:41.980Z",
+    "end": "2026-04-09T16:32:55.551Z",
+    "tokens_analyst_in": 2062,
+    "tokens_analyst_out": 190,
+    "tokens_critic_in": 4284,
+    "tokens_critic_out": 263,
+    "tokens_moderator_in": 1343,
+    "tokens_moderator_out": 42,
+    "searches_analyst": 3,
+    "searches_critic": 13,
+    "total_llm_tokens": 8184,
+    "total_searches": 16,
+    "_dbg_analyst": {
+        "_steps_count": 3,
+        "_step0_keys": [
+            "action",
+            "observation"
+        ],
+        "_tok_found": {
+            "input": 2062,
+            "output": 190
+        }
+    },
+    "_dbg_critic": {
+        "_steps_count": 14,
+        "_step0_keys": [
+            "action",
+            "observation"
+        ],
+        "_tok_found": {
+            "input": 4284,
+            "output": 263
+        }
+    },
+    "_dbg_moderator": {
+        "_tok_found": {
+            "input": 1343,
+            "output": 42
+        }
+    }
+}

@@ -1,0 +1,1 @@
+Propose and justify an asset allocation strategy for a pension fund for the next five years under a scenario of persistently elevated inflation (4-5% annually) and moderate economic growth in developed economies.
